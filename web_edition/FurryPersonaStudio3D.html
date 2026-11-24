@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Furry Persona Studio 3D v8.0 — 4K Full-Body Sculpt &amp; Anatomical Cutaway</title>
+<style>
+  :root {
+    --bg: #060812;
+    --panel: rgba(13, 18, 34, 0.94);
+    --panel2: #1a2340;
+    --accent: #29dcff;
+    --pink: #ff2a85;
+    --gold: #ffd166;
+    --text: #f3f7ff;
+    --muted: #9eb0d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 50% 0%, #152852, #060812 70%);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    background: rgba(9, 13, 26, 0.96);
+    border-bottom: 1px solid #263664;
+    padding: 10px 18px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .badge {
+    background: linear-gradient(90deg, #29dcff, #3a86ff);
+    color: #050812; font-size: 0.7rem; font-weight: 900; padding: 3px 9px; border-radius: 99px; letter-spacing: 0.08em;
+  }
+  header h1 { margin: 0; font-size: 1.0rem; color: var(--accent); letter-spacing: 0.04em; }
+  .toolbar { display: flex; gap: 7px; flex-wrap: wrap; }
+  button {
+    border: none; border-radius: 8px; padding: 7px 11px; font-weight: 700; color: #fff;
+    cursor: pointer; transition: transform 0.08s ease, filter 0.12s ease; font-size: 0.78rem;
+  }
+  button:hover { filter: brightness(1.15); }
+  button:active { transform: scale(0.95); }
+  .btn-purple { background: #7b2cbf; }
+  .btn-teal { background: #1e96a8; }
+  .btn-blue { background: #2d6cdf; }
+  .btn-orange { background: #e85d04; }
+  .btn-pink { background: var(--pink); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 285px 1fr 295px;
+    gap: 14px;
+    padding: 14px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1080px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid #263664;
+    border-radius: 14px;
+    padding: 13px;
+  }
+  .panel h2 {
+    margin: 0 0 8px 0; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .field { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; gap: 8px; }
+  .field label { font-size: 0.79rem; color: var(--muted); font-weight: 600; }
+  select {
+    background: var(--panel2); color: var(--text); border: 1px solid #384a82;
+    border-radius: 7px; padding: 5px 7px; font-size: 0.79rem; width: 148px;
+  }
+  .colors { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0 11px 0; }
+  .color-box {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--panel2); border-radius: 8px; padding: 4px 8px; font-size: 0.75rem;
+  }
+  .color-box input[type="color"] { width: 26px; height: 22px; border: none; background: none; cursor: pointer; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 9px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 9px; }
+  .toggle-btn { background: var(--panel2); border: 1px solid #384a82; font-size: 0.73rem; padding: 7px 4px; }
+  .toggle-btn.active { background: #29dcff; color: #050812; border-color: #29dcff; }
+
+  .center-col { display: flex; flex-direction: column; align-items: center; gap: 11px; }
+  .viewport-wrap { position: relative; width: 100%; max-width: 760px; }
+  canvas {
+    width: 100%; height: auto; border-radius: 16px;
+    border: 2px solid var(--accent); background: #050812;
+    cursor: grab; box-shadow: 0 22px 60px rgba(0, 0, 0, 0.85); display: block;
+  }
+  canvas:active { cursor: grabbing; }
+  .hud-top {
+    position: absolute; top: 10px; left: 12px; right: 12px;
+    display: flex; justify-content: space-between; pointer-events: none;
+    font-family: ui-monospace, Consolas, monospace; font-size: 0.71rem; gap: 8px;
+  }
+  .hud-pill {
+    background: rgba(6, 8, 18, 0.80); border: 1px solid rgba(41,220,255,0.45);
+    padding: 3px 10px; border-radius: 99px; color: var(--accent);
+  }
+  .hud-bottom {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(6, 8, 18, 0.82); border: 1px solid #35477d;
+    color: var(--muted); font-size: 0.71rem; padding: 4px 12px; border-radius: 99px;
+    pointer-events: none; white-space: nowrap;
+  }
+
+  .goodboy-box {
+    width: 100%; max-width: 760px;
+    background: linear-gradient(135deg, #2b1348, #141a38);
+    border: 2px solid var(--pink); border-radius: 14px; padding: 12px; text-align: center;
+  }
+  .goodboy-btn {
+    width: 100%; padding: 13px 20px; font-size: 1.2rem; letter-spacing: 0.08em;
+    background: linear-gradient(90deg, #ff2a85, #ff6b35);
+    box-shadow: 0 4px 22px rgba(255, 42, 133, 0.55);
+  }
+  .gb-toast { margin-top: 7px; font-weight: 700; color: var(--gold); font-size: 0.89rem; min-height: 20px; }
+  .gb-meta { margin-top: 2px; font-family: ui-monospace, Consolas, monospace; font-size: 0.73rem; color: var(--muted); }
+
+  .slider-row { margin-bottom: 7px; }
+  .slider-head { display: flex; justify-content: space-between; font-size: 0.77rem; color: var(--muted); margin-bottom: 2px; }
+  .slider-head strong { color: var(--accent); }
+  input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; margin: 0; }
+  .log-box {
+    background: #080b18; border-radius: 8px; padding: 7px; height: 96px;
+    overflow-y: auto; font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--gold);
+  }
+  .log-entry { padding: 2px 0; border-bottom: 1px solid #1e284a; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="badge">v8.0 4K FULL-BODY &amp; ANATOMY</span>
+    <h1>ZERO-CLIP MOUTH + FULL 3D WOLF BODY + INTERNAL ORGANS CUTAWAY</h1>
+  </div>
+  <div class="toolbar">
+    <button class="btn-blue" id="camFull">Full Body Cam</button>
+    <button class="btn-teal" id="camFace">Face Portrait</button>
+    <button class="btn-pink" id="camMouth">Mouth &amp; Throat</button>
+    <button class="btn-orange" id="camOrgans">Organ Cutaway</button>
+    <button class="btn-purple" id="btnPng">4K Snapshot PNG</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- LEFT PANEL -->
+  <section class="panel">
+    <h2>4K Graphics &amp; Shader Quality</h2>
+    <div class="field"><label>Resolution Scale</label><select id="selQuality">
+      <option value="0.75">Fast (720p)</option>
+      <option value="1.0" selected>Full HD (1080p)</option>
+      <option value="1.6">4K UHD Detail</option>
+    </select></div>
+    <div class="field"><label>3D Shader Style</label><select id="selStyle">
+      <option value="0">Pixar PBR Fur (Ref)</option>
+      <option value="1">Anime Cel-Shaded</option>
+      <option value="2">Cyber-Neon Rimlight</option>
+      <option value="3">Golden Hour Studio</option>
+    </select></div>
+
+    <h2 style="margin-top:10px;">Anatomical Cutaway / Organs</h2>
+    <div class="slider-row">
+      <div class="slider-head"><span>Torso Cutaway Window</span><strong id="valCut">0%</strong></div>
+      <input type="range" id="slCut" min="0" max="100" value="0" />
+    </div>
+    <div class="grid-2">
+      <button class="toggle-btn" id="btnToggleCut">Show Organs</button>
+      <button class="toggle-btn active" id="btnGlasses">Glasses: ON</button>
+      <button class="toggle-btn" id="btnSpin">Turntable: OFF</button>
+      <button class="toggle-btn" id="btnRandomAll">Randomize</button>
+    </div>
+
+    <h2 style="margin-top:8px;">Fur &amp; Anatomy Colors</h2>
+    <div class="colors">
+      <div class="color-box"><span>Main Fur</span><input type="color" id="colPrimary" value="#24b3db" /></div>
+      <div class="color-box"><span>White Mask</span><input type="color" id="colSecondary" value="#f2f5f9" /></div>
+      <div class="color-box"><span>Nose/Tips</span><input type="color" id="colNose" value="#1a4178" /></div>
+      <div class="color-box"><span>Eye Iris</span><input type="color" id="colEye" value="#1ba9f2" /></div>
+      <div class="color-box"><span>Glasses</span><input type="color" id="colGlasses" value="#2246cc" /></div>
+      <div class="color-box"><span>Tongue/Gum</span><input type="color" id="colTongue" value="#e86f8a" /></div>
+    </div>
+
+    <h2>Free Starter Presets</h2>
+    <div class="grid-2" id="presetGrid"></div>
+  </section>
+
+  <!-- CENTER 4K GPU RAYMARCHING VIEWPORT -->
+  <section class="center-col">
+    <div class="viewport-wrap">
+      <canvas id="glCanvas" width="760" height="640"></canvas>
+      <div class="hud-top">
+        <span class="hud-pill" id="hudRes">4K SDF ENGINE // FULL BODY + ORGANS</span>
+        <span class="hud-pill" id="hudCut" style="color:#ffd166;border-color:rgba(255,209,102,0.5);">Exterior Fur Mode</span>
+      </div>
+      <div class="hud-bottom">Drag to orbit 360° &bull; Scroll to zoom &bull; Slide "Torso Cutaway" to inspect heart, lungs, ribs, esophagus &amp; stomach!</div>
+    </div>
+
+    <div class="goodboy-box">
+      <button class="goodboy-btn" id="btnGoodBoy">🐾 GOOD BOY 🐾</button>
+      <div class="gb-toast" id="gbToast">Press for 1 of 20 random chaotic sounds + 3D jaw/tongue reaction!</div>
+      <div class="gb-meta" id="gbMeta">Good Boy Presses: 0 | 20 Random Audio Synths Ready</div>
+    </div>
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <section class="panel">
+    <h2>Zero-Clip Facial Presets</h2>
+    <div class="grid-3">
+      <button class="toggle-btn" id="poseSmile">Wolf Smile</button>
+      <button class="toggle-btn" id="poseWide">Wide Throat</button>
+      <button class="toggle-btn" id="poseBlep">Mega Blep</button>
+      <button class="toggle-btn" id="poseSnarl">Fangs</button>
+      <button class="toggle-btn" id="poseSleep">Sleepy</button>
+      <button class="toggle-btn" id="poseShut">Mouth Shut</button>
+    </div>
+
+    <h2>3D Rig &amp; Body Controls</h2>
+    <div class="slider-row">
+      <div class="slider-head"><span>Lower Jaw Open</span><strong id="valJaw">34°</strong></div>
+      <input type="range" id="slJaw" min="0" max="68" value="34" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Tongue Stick Out</span><strong id="valTongueOut">62%</strong></div>
+      <input type="range" id="slTongueOut" min="0" max="100" value="62" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Tongue Curl / Wag</span><strong id="valTongueCurl">10%</strong></div>
+      <input type="range" id="slTongueCurl" min="-100" max="100" value="10" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Eye Openness / Blink</span><strong id="valEyeOpen">100%</strong></div>
+      <input type="range" id="slEyeOpen" min="0" max="100" value="100" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Ear Perk / Tilt</span><strong id="valEars">75%</strong></div>
+      <input type="range" id="slEars" min="0" max="100" value="75" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Tail Wag Speed</span><strong id="valWag">65%</strong></div>
+      <input type="range" id="slWag" min="0" max="100" value="65" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Fur Micro-Detail</span><strong id="valFur">115%</strong></div>
+      <input type="range" id="slFur" min="0" max="160" value="115" />
+    </div>
+    <div class="slider-row">
+      <div class="slider-head"><span>Studio Light Angle</span><strong id="valLight">32°</strong></div>
+      <input type="range" id="slLight" min="-180" max="180" value="32" />
+    </div>
+
+    <h2 style="margin-top:8px;color:#ff2a85;">Good Boy Audio Log</h2>
+    <div class="log-box" id="audioLog"></div>
+  </section>
+</main>
+
+<script>
+// ============================================================================
+// v8.0 4K GPU RAYMARCHED FULL-BODY BLUE WOLF + ZERO-CLIP MOUTH + INTERNAL ORGANS
+// ============================================================================
+
+const $ = id => document.getElementById(id);
+const canvas = $("glCanvas");
+const gl = canvas.getContext("webgl", { antialias: true, preserveDrawingBuffer: true });
+if (!gl) alert("WebGL is required.");
+
+const VS = `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+
+const FS = `
+precision highp float;
+
+uniform vec2 uRes;
+uniform float uTime;
+uniform vec3 uCamPos;
+uniform vec3 uCamTarget;
+uniform vec3 uLightDir;
+uniform vec3 uColPrim;
+uniform vec3 uColSec;
+uniform vec3 uColNose;
+uniform vec3 uColEye;
+uniform vec3 uColGlasses;
+uniform vec3 uColTongue;
+uniform float uJawRad;
+uniform float uTongueOut;
+uniform float uTongueCurl;
+uniform float uEyeOpen;
+uniform float uEarPerk;
+uniform float uTailWag;
+uniform float uFurDetail;
+uniform float uCutaway;
+uniform float uShowGlasses;
+uniform int uShaderMode;
+
+// Material IDs
+const float M_FUR      = 1.0;
+const float M_EYE      = 2.0;
+const float M_NOSE     = 3.0;
+const float M_GUMS     = 4.0;
+const float M_TEETH    = 5.0;
+const float M_TONGUE   = 6.0;
+const float M_GLASSES  = 7.0;
+const float M_BROW     = 8.0;
+const float M_THROAT   = 9.0;
+const float M_HEART    = 11.0;
+const float M_LUNGS    = 12.0;
+const float M_STOMACH  = 13.0;
+const float M_LIVER    = 14.0;
+const float M_INTEST   = 15.0;
+const float M_BONE     = 16.0;
+const float M_CLAW     = 17.0;
+
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+float smax(float a, float b, float k) { return -smin(-a, -b, k); }
+vec2 opU(vec2 a, vec2 b) { return (a.x < b.x) ? a : b; }
+mat2 rot2(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+
+float sdEllipsoid(vec3 p, vec3 r) {
+  float k0 = length(p / r);
+  float k1 = length(p / (r * r));
+  return k0 * (k0 - 1.0) / max(k1, 1e-5);
+}
+float sdCapsule(vec3 p, vec3 a, vec3 b, float r1, float r2) {
+  vec3 pa = p - a, ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - mix(r1, r2, h);
+}
+float sdRoundBox(vec3 p, vec3 b, float r) {
+  vec3 q = abs(p) - b;
+  return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+}
+
+float hash21(vec2 p) {
+  p = fract(p * vec2(234.34, 435.345));
+  p += dot(p, p + 34.23);
+  return fract(p.x * p.y);
+}
+float noise2(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x),
+    mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x),
+    f.y
+  );
+}
+float furFibers(vec3 p) {
+  vec2 uv1 = vec2(atan(p.x, p.z + 0.15) * 20.0, p.y * 30.0 - abs(p.x) * 6.5);
+  float f1 = noise2(uv1 * vec2(3.4, 0.65));
+  float f2 = noise2(uv1 * vec2(8.0, 1.5) + 14.7);
+  return f1 * 0.62 + f2 * 0.38;
+}
+
+// ============================================================================
+// FULL-BODY 3D BLUE WOLF + ZERO-CLIP MOUTH + INTERNAL ORGANS SDF
+// ============================================================================
+vec2 mapScene(vec3 p) {
+  float breath = sin(uTime * 2.5) * 0.015;
+  p.y -= breath;
+  vec3 sp = vec3(abs(p.x), p.y, p.z);
+
+  // --------------------------------------------------------------------------
+  // 1. HEAD, UPPER MUZZLE, CHEEKS, EARS & SWEPT HAIR (strictly ABOVE mouth cleft!)
+  // --------------------------------------------------------------------------
+  float head = sdEllipsoid(p - vec3(0.0, 0.24, -0.05), vec3(0.74, 0.76, 0.76));
+  float cheeks = sdEllipsoid(sp - vec3(0.60, -0.06, 0.12), vec3(0.36, 0.28, 0.32));
+  head = smin(head, cheeks, 0.22);
+
+  // Sculpted cheek fur spikes
+  float t1 = sdCapsule(sp, vec3(0.68, 0.03, 0.08), vec3(1.00, 0.07, -0.04), 0.13, 0.015);
+  float t2 = sdCapsule(sp, vec3(0.64, -0.12, 0.10), vec3(0.95, -0.20, 0.00), 0.12, 0.015);
+  float t3 = sdCapsule(sp, vec3(0.54, -0.25, 0.12), vec3(0.80, -0.40, 0.04), 0.10, 0.015);
+  head = smin(head, min(t1, min(t2, t3)), 0.08);
+
+  // Upper muzzle bridge (cleanly positioned ABOVE y = -0.12 so it NEVER clips lower jaw!)
+  float upperMuzzle = sdCapsule(p, vec3(0.0, 0.06, 0.36), vec3(0.0, 0.00, 1.06), 0.36, 0.22);
+  float lipPads = sdEllipsoid(sp - vec3(0.16, -0.04, 0.86), vec3(0.20, 0.10, 0.26));
+  head = smin(head, smin(upperMuzzle, lipPads, 0.12), 0.16);
+
+  // Brow ridges
+  float browRidge = sdCapsule(sp, vec3(0.14, 0.56, 0.54), vec3(0.50, 0.44, 0.44), 0.11, 0.08);
+  head = smin(head, browRidge, 0.12);
+
+  // Tall Wolf Ears with carved inner ear hollow
+  float earTilt = 0.34 - (uEarPerk - 0.5) * 0.24 + sin(uTime * 3.8) * 0.02;
+  vec3 ep = sp - vec3(0.45, 0.78, -0.06);
+  ep.xy = rot2(earTilt) * ep.xy;
+  float earOuter = sdCapsule(ep, vec3(0.0, -0.12, 0.0), vec3(0.08, 0.86, -0.06), 0.29, 0.042);
+  float earHollow = sdCapsule(ep - vec3(0.0, 0.02, 0.16), vec3(0.0, -0.02, 0.0), vec3(0.06, 0.70, -0.04), 0.20, 0.024);
+  float ear = smax(earOuter, -earHollow, 0.055);
+  head = smin(head, ear, 0.13);
+
+  // Swept Spiky Blue Forehead Hair Locks
+  float h1 = sdCapsule(p, vec3(-0.18, 0.82, 0.20), vec3(-0.02, 1.30, 0.26), 0.15, 0.015);
+  float h2 = sdCapsule(p, vec3(-0.06, 0.86, 0.26), vec3( 0.30, 1.22, 0.32), 0.16, 0.015);
+  float h3 = sdCapsule(p, vec3( 0.06, 0.82, 0.30), vec3( 0.48, 1.02, 0.34), 0.14, 0.015);
+  float h4 = sdCapsule(p, vec3(-0.28, 0.76, 0.16), vec3(-0.34, 1.16, 0.12), 0.12, 0.015);
+  float h5 = sdCapsule(p, vec3( 0.02, 0.84, 0.10), vec3( 0.34, 1.16, 0.14), 0.14, 0.015);
+  head = smin(head, min(min(h1, h2), min(h3, min(h4, h5))), 0.07);
+
+  // Carve eye sockets
+  float eyeSocket = length(sp - vec3(0.32, 0.24, 0.59)) - 0.235;
+  head = smax(head, -eyeSocket, 0.05);
+
+  // CLEAN ZERO-CLIPPING ORAL CAVITY & THROAT CARVE!
+  // Carves strictly beneath y = -0.11 in front, tapering into the curved throat tunnel behind z = 0.22!
+  float mouthPlane = sdRoundBox(p - vec3(0.0, -0.32, 0.78), vec3(0.34, 0.21, 0.55), 0.08);
+  float throatCut = sdCapsule(p, vec3(0.0, -0.22, 0.26), vec3(0.0, -0.68, -0.18), 0.23, 0.14);
+  float oralCarve = smin(mouthPlane, throatCut, 0.10);
+  head = smax(head, -oralCarve, 0.035);
+
+  // --------------------------------------------------------------------------
+  // 2. ZERO-CLIP HINGED LOWER JAW (rotated DOWNWARD cleanly with rot2(-uJawRad))
+  // --------------------------------------------------------------------------
+  vec3 jp = p - vec3(0.0, -0.22, 0.26);
+  jp.yz = rot2(-uJawRad) * jp.yz;
+  vec3 jsp = vec3(abs(jp.x), jp.y, jp.z);
+
+  // Lower mandible body stays strictly BELOW jp.y = -0.02
+  float lowerJaw = sdCapsule(jp, vec3(0.0, -0.13, 0.04), vec3(0.0, -0.10, 0.68), 0.24, 0.17);
+  // Carve clean interior tongue bed inside lower jaw
+  float jawBed = sdCapsule(jp, vec3(0.0, 0.01, 0.06), vec3(0.0, 0.01, 0.58), 0.20, 0.14);
+  lowerJaw = smax(lowerJaw, -jawBed, 0.025);
+  // Combine head & lower jaw with tight blend ONLY near the rear hinge (no front clipping!)
+  float furBody = smin(head, lowerJaw, 0.05);
+
+  // --------------------------------------------------------------------------
+  // 3. FULL 3D SCULPTED BLUE WOLF BODY (Torso, Arms, Paws, Digitigrade Legs, Tail!)
+  // --------------------------------------------------------------------------
+  float neck = sdCapsule(p, vec3(0.0, -0.40, -0.14), vec3(0.0, -0.96, -0.16), 0.40, 0.52);
+  float chest = sdEllipsoid(p - vec3(0.0, -1.52, -0.12), vec3(0.86, 0.78, 0.66));
+  float abdomen = sdEllipsoid(p - vec3(0.0, -2.36, -0.14), vec3(0.72, 0.74, 0.58));
+  float chestRuff = sdEllipsoid(p - vec3(0.0, -1.26, 0.26), vec3(0.46, 0.52, 0.28));
+  float torso = smin(neck, smin(chest, smin(abdomen, chestRuff, 0.18), 0.26), 0.18);
+
+  // Arms & Furry Paws (relaxed heroic stance)
+  float upperArm = sdCapsule(sp, vec3(0.76, -1.24, -0.12), vec3(1.12, -2.02, -0.04), 0.28, 0.22);
+  float foreArm  = sdCapsule(sp, vec3(1.12, -2.02, -0.04), vec3(1.06, -2.76,  0.18), 0.21, 0.16);
+  float handPaw  = sdEllipsoid(sp - vec3(1.04, -2.92, 0.24), vec3(0.18, 0.20, 0.22));
+  float arms = smin(upperArm, smin(foreArm, handPaw, 0.08), 0.10);
+
+  // Digitigrade Wolf Legs & Paws
+  float thigh  = sdCapsule(sp, vec3(0.44, -2.72, -0.12), vec3(0.54, -3.58,  0.12), 0.34, 0.23);
+  float shin   = sdCapsule(sp, vec3(0.54, -3.58,  0.12), vec3(0.50, -4.38, -0.14), 0.21, 0.15);
+  float ankle  = sdCapsule(sp, vec3(0.50, -4.38, -0.14), vec3(0.52, -4.82,  0.12), 0.15, 0.15);
+  float foot   = sdEllipsoid(sp - vec3(0.52, -4.92, 0.28), vec3(0.22, 0.14, 0.34));
+  float legs = smin(thigh, smin(shin, smin(ankle, foot, 0.08), 0.08), 0.12);
+
+  // Big Fluffy Animated Wagging 3D Wolf Tail!
+  float wag = sin(uTime * (1.2 + uTailWag * 7.0)) * (0.25 + uTailWag * 0.55);
+  float tail1 = sdCapsule(p, vec3(0.0, -2.65, -0.52), vec3(wag * 0.45, -2.55, -1.32), 0.22, 0.36);
+  float tail2 = sdCapsule(p, vec3(wag * 0.45, -2.55, -1.32), vec3(wag * 1.15, -1.95, -1.95), 0.35, 0.10);
+  float tail = smin(tail1, tail2, 0.16);
+
+  furBody = smin(furBody, smin(torso, smin(arms, smin(legs, tail, 0.18), 0.16), 0.16), 0.15);
+
+  // ANATOMICAL TORSO CUTAWAY WINDOW (reveals clean hollow chest/abdomen & organs!)
+  if (uCutaway > 0.01) {
+    float winR = 0.05 + uCutaway * 0.72;
+    float cutWin = sdEllipsoid(p - vec3(0.0, -1.92, 0.36), vec3(winR * 0.92, winR * 1.48, 0.68));
+    float innerHollow = sdEllipsoid(p - vec3(0.0, -1.94, -0.06), vec3(0.62, 1.05, 0.48));
+    furBody = smax(furBody, -smin(cutWin, innerHollow, 0.08), 0.04);
+  }
+
+  // Subtle geometric fur displacement
+  float furDisp = (furFibers(p) - 0.5) * 0.016 * uFurDetail;
+  vec2 res = vec2(furBody + furDisp, M_FUR);
+
+  // --------------------------------------------------------------------------
+  // 4. INTERNAL ORGANS (Esophagus, Ribcage, Beating Heart, Breathing Lungs,
+  //    Stomach, Liver & Coiled Intestines — visible when Cutaway > 0!)
+  // --------------------------------------------------------------------------
+  if (uCutaway > 0.02) {
+    // Esophagus descending straight from the carved throat into the stomach!
+    float esoph = sdCapsule(p, vec3(0.0, -0.62, -0.18), vec3(0.04, -2.02, -0.18), 0.09, 0.085);
+    res = opU(res, vec2(esoph, M_THROAT));
+
+    // Breathing 3D Lungs (expand & contract smoothly with breath!)
+    float lungScale = 1.0 + sin(uTime * 2.5) * 0.07;
+    float lungs = sdEllipsoid(sp - vec3(0.30, -1.46, -0.08), vec3(0.24, 0.38, 0.24) * lungScale);
+    res = opU(res, vec2(lungs, M_LUNGS));
+
+    // Beating 3D Heart (realistic lub-dub heartbeat pulse!)
+    float hb = pow(max(0.0, sin(uTime * 5.2)), 6.0) * 0.09 + pow(max(0.0, sin(uTime * 5.2 - 0.8)), 8.0) * 0.05;
+    float heart = sdEllipsoid(p - vec3(-0.07, -1.56, 0.06), vec3(0.16, 0.20, 0.16) * (1.0 + hb));
+    res = opU(res, vec2(heart, M_HEART));
+
+    // Sculpted 3D Ribcage arches framing the lungs & heart
+    float ribs = 1e5;
+    for (int i = 0; i < 4; i++) {
+      float ry = -1.24 - float(i) * 0.18;
+      float rRib = sdCapsule(sp, vec3(0.56, ry, -0.18), vec3(0.46, ry - 0.06, 0.20), 0.028, 0.024);
+      ribs = min(ribs, rRib);
+    }
+    res = opU(res, vec2(ribs, M_BONE));
+
+    // J-Shaped 3D Stomach (connected cleanly to the esophagus!)
+    float stom1 = sdEllipsoid(p - vec3(0.16, -2.14, -0.04), vec3(0.26, 0.22, 0.22));
+    float stom2 = sdCapsule(p, vec3(0.04, -1.98, -0.14), vec3(0.22, -2.22, 0.02), 0.11, 0.18);
+    float stomach = smin(stom1, stom2, 0.10);
+    res = opU(res, vec2(stomach, M_STOMACH));
+
+    // 3D Liver tucked beside the stomach
+    float liver = sdEllipsoid(p - vec3(-0.24, -2.02, -0.04), vec3(0.24, 0.17, 0.20));
+    res = opU(res, vec2(liver, M_LIVER));
+
+    // Coiled 3D Intestines below the stomach
+    float i1 = sdCapsule(p, vec3(-0.26, -2.44, 0.00), vec3( 0.26, -2.48, 0.02), 0.095, 0.095);
+    float i2 = sdCapsule(p, vec3( 0.26, -2.48, 0.02), vec3(-0.24, -2.64, 0.00), 0.090, 0.090);
+    float i3 = sdCapsule(p, vec3(-0.24, -2.64, 0.00), vec3( 0.22, -2.76, -0.02), 0.085, 0.085);
+    res = opU(res, vec2(smin(i1, smin(i2, i3, 0.05), 0.05), M_INTEST));
+  }
+
+  // --------------------------------------------------------------------------
+  // 5. ZERO-CLIP INTERNAL MOUTH, THROAT, UVULA, GUMS, TEETH & GROOVED TONGUE!
+  // --------------------------------------------------------------------------
+  // Recessed throat lining & dangling swaying uvula (strictly behind z < 0.28)
+  float throatWall = max(abs(throatCut) - 0.022, p.z - 0.28);
+  res = opU(res, vec2(throatWall, M_THROAT));
+  float uvula = sdCapsule(p, vec3(0.0, -0.08, 0.26), vec3(sin(uTime * 5.0) * 0.02, -0.20, 0.23), 0.04, 0.024);
+  res = opU(res, vec2(uvula, M_GUMS));
+
+  // Upper Gums (strictly at y = -0.11, clear of upper muzzle)
+  float upGum = sdCapsule(sp, vec3(0.0, -0.11, 0.90), vec3(0.22, -0.12, 0.52), 0.048, 0.046);
+  // Lower Gums (strictly at jp.y = -0.02, clear of lower jaw)
+  float loGum = sdCapsule(jsp, vec3(0.0, -0.02, 0.62), vec3(0.19, -0.02, 0.28), 0.044, 0.042);
+  res = opU(res, vec2(min(upGum, loGum), M_GUMS));
+
+  // Individual 3D Teeth (seated cleanly on gumlines — ZERO clipping!)
+  float uFang = sdCapsule(sp, vec3(0.18, -0.12, 0.82), vec3(0.19, -0.23, 0.84), 0.032, 0.005);
+  float uInc1 = sdCapsule(sp, vec3(0.045, -0.12, 0.91), vec3(0.045, -0.175, 0.92), 0.021, 0.010);
+  float uInc2 = sdCapsule(sp, vec3(0.105, -0.12, 0.89), vec3(0.105, -0.175, 0.90), 0.021, 0.010);
+  float uMol1 = sdCapsule(sp, vec3(0.21, -0.13, 0.66), vec3(0.21, -0.185, 0.66), 0.028, 0.012);
+  float lFang = sdCapsule(jsp, vec3(0.15, -0.01, 0.56), vec3(0.16, 0.085, 0.58), 0.027, 0.005);
+  float lInc1 = sdCapsule(jsp, vec3(0.04, -0.01, 0.63), vec3(0.04, 0.042, 0.64), 0.018, 0.009);
+  float lInc2 = sdCapsule(jsp, vec3(0.09, -0.01, 0.61), vec3(0.09, 0.042, 0.62), 0.018, 0.009);
+  res = opU(res, vec2(min(min(min(uFang, uInc1), min(uInc2, uMol1)), min(lFang, min(lInc1, lInc2))), M_TEETH));
+
+  // Clean Wet 3D Tongue (sits neatly inside lower gum arch & curls smoothly over lower lip!)
+  vec3 tp = jp;
+  float tExt = 0.30 + uTongueOut * 0.56;
+  tp.x -= (uTongueCurl * 0.22 + sin(uTime * 5.2) * 0.018 * uTongueOut) * clamp(tp.z, 0.0, 1.0);
+  float droop = max(0.0, tp.z - 0.38) * max(0.0, tp.z - 0.38) * (0.45 + uTongueOut * 0.25);
+  tp.y += droop;
+  float tongue = sdCapsule(tp, vec3(0.0, 0.01, 0.12), vec3(0.0, 0.01, tExt), 0.125, 0.105);
+  tongue = smax(tongue, abs(tp.y - 0.01) - 0.045, 0.024);
+  tongue += exp(-tp.x * tp.x * 130.0) * 0.014; // central dorsal groove
+  res = opU(res, vec2(tongue, M_TONGUE));
+
+  // --------------------------------------------------------------------------
+  // 6. PEBBLED WET NOSE, PHOTOREAL EYEBALLS, EYEBROWS & COBALT GLASSES
+  // --------------------------------------------------------------------------
+  float nose = sdEllipsoid(p - vec3(0.0, 0.06, 1.14), vec3(0.185, 0.13, 0.135));
+  float nostril = sdEllipsoid(sp - vec3(0.072, 0.045, 1.25), vec3(0.046, 0.034, 0.055));
+  nose = smax(nose, -nostril, 0.014);
+  res = opU(res, vec2(nose, M_NOSE));
+
+  float eyeball = length(sp - vec3(0.32, 0.24, 0.62)) - 0.205;
+  res = opU(res, vec2(eyeball, M_EYE));
+  float blinkDrop = (1.0 - uEyeOpen) * 0.22;
+  if (blinkDrop > 0.01) {
+    res = opU(res, vec2(sdEllipsoid(sp - vec3(0.32, 0.39 - blinkDrop, 0.64), vec3(0.22, 0.14 + blinkDrop * 0.4, 0.22)), M_FUR));
+  }
+  res = opU(res, vec2(sdCapsule(sp, vec3(0.16, 0.56, 0.64), vec3(0.49, 0.48, 0.54), 0.040, 0.030), M_BROW));
+
+  if (uShowGlasses > 0.5) {
+    vec3 gp = sp - vec3(0.37, 0.23, 0.89);
+    gp.xz = rot2(-0.14) * gp.xz;
+    float frame = smax(sdRoundBox(gp, vec3(0.275, 0.175, 0.025), 0.052), -sdRoundBox(gp, vec3(0.22, 0.125, 0.08), 0.032), 0.01);
+    float bridge = sdCapsule(p, vec3(-0.10, 0.26, 0.93), vec3(0.10, 0.26, 0.93), 0.030, 0.030);
+    float temple = sdCapsule(sp, vec3(0.64, 0.28, 0.83), vec3(0.75, 0.34, 0.05), 0.026, 0.020);
+    res = opU(res, vec2(min(min(frame, bridge), temple), M_GLASSES));
+  }
+
+  return res;
+}
+
+vec3 calcNormal(vec3 p) {
+  vec2 e = vec2(0.0025, -0.0025);
+  return normalize(
+    e.xyy * mapScene(p + e.xyy).x +
+    e.yyx * mapScene(p + e.yyx).x +
+    e.yxy * mapScene(p + e.yxy).x +
+    e.xxx * mapScene(p + e.xxx).x
+  );
+}
+
+float calcAO(vec3 p, vec3 n) {
+  float ao = 0.0, sca = 1.0;
+  for (int i = 1; i <= 5; i++) {
+    float h = 0.035 + 0.09 * float(i);
+    ao += (h - mapScene(p + n * h).x) * sca;
+    sca *= 0.66;
+  }
+  return clamp(1.0 - 2.1 * ao, 0.14, 1.0);
+}
+
+float calcShadow(vec3 ro, vec3 rd) {
+  float res = 1.0, t = 0.04;
+  for (int i = 0; i < 24; i++) {
+    float h = mapScene(ro + rd * t).x;
+    res = min(res, 7.0 * h / t);
+    t += clamp(h, 0.03, 0.25);
+    if (res < 0.02 || t > 3.5) break;
+  }
+  return clamp(res, 0.20, 1.0);
+}
+
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+  vec3 fw = normalize(uCamTarget - uCamPos);
+  vec3 rt = normalize(cross(fw, vec3(0.0, 1.0, 0.0)));
+  vec3 up = cross(rt, fw);
+  vec3 rd = normalize(fw * 1.65 + rt * uv.x + up * uv.y);
+
+  // Studio dark gradient + subtle floor reflection
+  vec3 col = mix(vec3(0.03, 0.05, 0.11), vec3(0.10, 0.16, 0.30), clamp(uv.y + 0.55, 0.0, 1.0));
+  col += vec3(0.04, 0.12, 0.22) * exp(-length(uv) * 2.0);
+
+  float t = 0.0, mat = -1.0;
+  for (int i = 0; i < 96; i++) {
+    vec3 p = uCamPos + rd * t;
+    vec2 h = mapScene(p);
+    if (h.x < 0.0022) { mat = h.y; break; }
+    t += h.x * 0.85;
+    if (t > 16.0) break;
+  }
+
+  if (mat > 0.0) {
+    vec3 p = uCamPos + rd * t;
+    vec3 N = calcNormal(p);
+    vec3 L = normalize(uLightDir);
+    vec3 V = -rd;
+    vec3 H = normalize(L + V);
+
+    float ao = calcAO(p, N);
+    float sh = calcShadow(p + N * 0.015, L);
+    float wrap = max(0.0, (dot(N, L) + 0.48) / 1.48);
+    float fill = max(dot(N, normalize(vec3(-0.7, 0.3, 0.5))), 0.0) * 0.34;
+    float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+
+    if (mat == M_FUR) {
+      vec3 sp = vec3(abs(p.x), p.y, p.z);
+      float fib = furFibers(p);
+      // Blue Wolf markings across FULL BODY (white eye mask, cheeks, muzzle sides, V-chest, belly, paws & tail tip!)
+      float cheekW = smoothstep(0.16, -0.10, p.y) * smoothstep(-0.08, 0.30, p.z) * smoothstep(0.90, 0.22, sp.x) * smoothstep(-0.65, -0.35, p.y);
+      float eyeW   = smoothstep(0.37, 0.16, length(sp - vec3(0.32, 0.24, 0.61)));
+      float bridgeB = smoothstep(0.16, 0.05, sp.x) * smoothstep(0.08, 0.22, p.y + p.z * 0.12) * smoothstep(0.3, 0.85, p.z);
+      float earW   = smoothstep(0.55, 0.85, p.y) * smoothstep(-0.02, 0.12, p.z) * smoothstep(0.75, 0.35, sp.x);
+      float bellyW = smoothstep(-0.60, -0.95, p.y) * smoothstep(-3.0, -2.5, p.y) * smoothstep(0.02, 0.35, p.z) * smoothstep(0.58, 0.18, sp.x);
+      float pawW   = smoothstep(-4.55, -4.82, p.y) + smoothstep(-2.68, -2.88, p.y) * smoothstep(0.75, 0.95, sp.x);
+      float tailTipW = smoothstep(-1.45, -1.85, p.z);
+
+      float whiteMask = clamp(max(max(max(cheekW, eyeW), max(earW, bellyW)), max(pawW, tailTipW)) - bridgeB, 0.0, 1.0);
+      whiteMask = smoothstep(0.28, 0.68, whiteMask + (fib - 0.5) * 0.34);
+      float earTip = smoothstep(1.22, 1.54, p.y) * smoothstep(0.35, 0.62, sp.x);
+
+      vec3 furCol = mix(uColPrim, uColSec, whiteMask);
+      furCol = mix(furCol, uColNose * 0.7, earTip * 0.75);
+      furCol *= mix(0.84, 1.15, fib);
+
+      vec3 Nf = normalize(N + vec3(fib - 0.5, (fib - 0.5) * 0.7, 0.0) * 0.34 * uFurDetail);
+      float fWrap = max(0.0, (dot(Nf, L) + 0.5) / 1.5);
+      float hairSpec = pow(max(dot(Nf, H), 0.0), 22.0) * (0.22 + 0.26 * fib);
+      col = furCol * (0.24 + fWrap * 0.82 * sh + fill) * ao + vec3(0.78, 0.94, 1.0) * (hairSpec + rim * 0.42);
+      if (uShaderMode == 1) col = furCol * (fWrap * sh > 0.42 ? 1.05 : 0.68) * ao + vec3(0.8,0.95,1.0) * step(0.5, rim) * 0.35;
+      if (uShaderMode == 2) col += vec3(0.0, 0.92, 1.0) * rim * 1.1;
+      if (uShaderMode == 3) col *= vec3(1.08, 0.98, 0.88);
+    }
+    else if (mat == M_EYE) {
+      float br = sin(uTime * 2.5) * 0.015;
+      vec3 ep = vec3(abs(p.x) - 0.32, (p.y - br) - 0.24, p.z - 0.62);
+      vec2 e2 = ep.xy / 0.205;
+      float r = length(e2), ang = atan(e2.y, e2.x);
+      vec3 eyeCol = vec3(0.95, 0.97, 1.0);
+      if (ep.z > 0.05 && r < 0.68) {
+        float limbal = smoothstep(0.68, 0.56, r);
+        float fib = 0.72 + 0.34 * sin(ang * 36.0 + noise2(vec2(ang * 6.0, r * 14.0)) * 4.5);
+        vec3 iris = uColEye * fib * (0.82 + 0.24 * noise2(vec2(ang * 20.0, r * 18.0)));
+        iris = mix(iris, uColEye * 1.7 + vec3(0.2, 0.5, 0.6), smoothstep(0.08, -0.45, e2.y) * smoothstep(0.62, 0.22, r) * 0.88);
+        iris *= mix(0.42, 1.08, smoothstep(0.45, -0.25, e2.y));
+        eyeCol = mix(vec3(0.04, 0.08, 0.16), iris, limbal);
+        eyeCol = mix(eyeCol, vec3(0.015, 0.02, 0.04), smoothstep(0.34, 0.30, r));
+      }
+      float c1 = smoothstep(0.15, 0.07, length(e2 - vec2(-0.18, 0.22)));
+      float c2 = smoothstep(0.07, 0.025, length(e2 - vec2(0.19, -0.12)));
+      float cSpec = pow(max(dot(N, H), 0.0), 140.0) * 0.85;
+      col = eyeCol * (0.45 + 0.62 * wrap) * (0.65 + 0.35 * ao) + vec3(1.0) * (c1 * 0.98 + c2 * 0.72 + cSpec);
+    }
+    else if (mat == M_NOSE) {
+      float peb = noise2(p.xy * 65.0) * 0.22 + noise2(p.xy * 130.0) * 0.12;
+      vec3 Nn = normalize(N + vec3(peb - 0.15) * 0.35);
+      col = uColNose * (0.30 + wrap * 0.72 * sh + fill + peb * 0.25) * ao + vec3(0.75, 0.92, 1.0) * (pow(max(dot(Nn, H), 0.0), 68.0) * (0.95 + peb) + rim * 0.55);
+    }
+    else if (mat == M_TONGUE) {
+      col = uColTongue * (0.30 + wrap * 0.78 * sh + fill) * ao + vec3(1.0, 0.92, 0.95) * (pow(max(dot(N, H), 0.0), 92.0) * 0.85 + rim * 0.35);
+    }
+    else if (mat == M_GUMS || mat == M_THROAT) {
+      vec3 gCol = (mat == M_THROAT) ? uColTongue * vec3(0.55, 0.36, 0.42) : uColTongue * vec3(0.84, 0.66, 0.72);
+      col = gCol * (0.25 + wrap * 0.76 * sh + fill) * ao + vec3(1.0, 0.90, 0.94) * pow(max(dot(N, H), 0.0), 70.0) * 0.65;
+    }
+    else if (mat == M_TEETH || mat == M_BONE) {
+      vec3 bCol = (mat == M_TEETH) ? vec3(0.98, 0.97, 0.94) : vec3(0.92, 0.89, 0.82);
+      col = bCol * (0.32 + wrap * 0.75 * sh + fill) * ao + vec3(1.0) * pow(max(dot(N, H), 0.0), 100.0) * 0.85;
+    }
+    else if (mat == M_GLASSES) {
+      col = uColGlasses * (0.26 + wrap * 0.78 * sh + fill) * ao + vec3(0.85, 0.94, 1.0) * (pow(max(dot(N, H), 0.0), 96.0) * 0.9 + rim * 0.55);
+    }
+    else if (mat == M_BROW) {
+      col = vec3(0.10, 0.13, 0.20) * (0.35 + wrap * 0.75 * sh) * ao;
+    }
+    else if (mat == M_HEART) {
+      col = vec3(0.76, 0.12, 0.18) * (0.32 + wrap * 0.82 * sh + fill) * ao + vec3(1.0, 0.85, 0.88) * pow(max(dot(N, H), 0.0), 84.0) * 0.9;
+    }
+    else if (mat == M_LUNGS) {
+      col = vec3(0.88, 0.50, 0.56) * (0.32 + wrap * 0.78 * sh + fill) * ao + vec3(1.0, 0.90, 0.92) * pow(max(dot(N, H), 0.0), 48.0) * 0.55;
+    }
+    else if (mat == M_STOMACH) {
+      col = vec3(0.82, 0.42, 0.46) * (0.32 + wrap * 0.78 * sh + fill) * ao + vec3(1.0, 0.90, 0.92) * pow(max(dot(N, H), 0.0), 75.0) * 0.75;
+    }
+    else if (mat == M_LIVER) {
+      col = vec3(0.48, 0.15, 0.16) * (0.30 + wrap * 0.78 * sh + fill) * ao + vec3(1.0, 0.85, 0.85) * pow(max(dot(N, H), 0.0), 70.0) * 0.65;
+    }
+    else if (mat == M_INTEST) {
+      col = vec3(0.86, 0.58, 0.56) * (0.32 + wrap * 0.76 * sh + fill) * ao + vec3(1.0, 0.92, 0.92) * pow(max(dot(N, H), 0.0), 64.0) * 0.65;
+    }
+  }
+
+  col = col / (col + vec3(0.85)) * 1.18;
+  col = pow(max(col, 0.0), vec3(0.92));
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const qb = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, qb);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const aPos = gl.getAttribLocation(prog, "aPos");
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+const U = {};
+["uRes","uTime","uCamPos","uCamTarget","uLightDir","uColPrim","uColSec","uColNose","uColEye","uColGlasses","uColTongue","uJawRad","uTongueOut","uTongueCurl","uEyeOpen","uEarPerk","uTailWag","uFurDetail","uCutaway","uShowGlasses","uShaderMode"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+
+function hex3(h) {
+  const n = parseInt(h.replace("#",""), 16);
+  return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255];
+}
+
+const PRESETS = [
+  { name: "Blue Wolf (Ref)", primary: "#24b3db", secondary: "#f2f5f9", nose: "#1a4178", eye: "#1ba9f2", glassesCol: "#2246cc", tongue: "#e86f8a", glasses: true, jaw: 34, tongueOut: 62 },
+  { name: "Sakura Fox", primary: "#e56b55", secondary: "#fff5ee", nose: "#2b1614", eye: "#2ec4b6", glassesCol: "#ff2a85", tongue: "#ff7aa2", glasses: false, jaw: 40, tongueOut: 78 },
+  { name: "Arctic Husky", primary: "#62728f", secondary: "#ffffff", nose: "#181d26", eye: "#00e5ff", glassesCol: "#1a2238", tongue: "#ff6b8b", glasses: true, jaw: 30, tongueOut: 52 },
+  { name: "Neon Cyber", primary: "#5a28c8", secondary: "#e4f2ff", nose: "#14102b", eye: "#00f5d4", glassesCol: "#ff2a85", tongue: "#ff5c93", glasses: true, jaw: 45, tongueOut: 70 }
+];
+
+const state = {
+  ...PRESETS[0],
+  quality: 1.0,
+  shaderMode: 0,
+  cutaway: 0,
+  tongueCurl: 10,
+  eyeOpen: 100,
+  ears: 75,
+  wag: 65,
+  furDetail: 115,
+  lightAngle: 32,
+  autoSpin: false,
+  camYaw: -0.22,
+  camPitch: 0.05,
+  camDist: 7.4,
+  targetCamYaw: -0.22,
+  targetCamPitch: 0.05,
+  targetCamDist: 7.4,
+  camTargetY: -1.85,
+  targetCamY: -1.85,
+  shake: 0,
+  gbCount: 0
+};
+
+function applyQuality() {
+  canvas.width = Math.round(760 * state.quality);
+  canvas.height = Math.round(640 * state.quality);
+  $("hudRes").textContent = `GPU SDF // ${canvas.width}x${canvas.height} // FULL BODY + ORGANS`;
+}
+
+function render(ts) {
+  const t = ts * 0.001;
+  if (state.autoSpin) state.targetCamYaw += 0.011;
+  state.camYaw += (state.targetCamYaw - state.camYaw) * 0.14;
+  state.camPitch += (state.targetCamPitch - state.camPitch) * 0.14;
+  state.camDist += (state.targetCamDist - state.camDist) * 0.14;
+  state.camTargetY += (state.targetCamY - state.camTargetY) * 0.14;
+  state.shake = Math.max(0, state.shake - 0.06);
+
+  const sx = state.shake > 0 ? (Math.random() - 0.5) * state.shake * 0.18 : 0;
+  const sy = state.shake > 0 ? (Math.random() - 0.5) * state.shake * 0.18 : 0;
+  const camPos = [
+    Math.sin(state.camYaw) * Math.cos(state.camPitch) * state.camDist + sx,
+    Math.sin(state.camPitch) * state.camDist + state.camTargetY + sy,
+    Math.cos(state.camYaw) * Math.cos(state.camPitch) * state.camDist
+  ];
+  const lRad = (state.lightAngle * Math.PI) / 180;
+  const blink = (state.eyeOpen / 100) * (Math.sin(t * 0.85) > 0.975 ? 0.05 : 1.0);
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.uniform2f(U.uRes, canvas.width, canvas.height);
+  gl.uniform1f(U.uTime, t);
+  gl.uniform3fv(U.uCamPos, camPos);
+  gl.uniform3f(U.uCamTarget, 0.0, state.camTargetY, 0.12);
+  gl.uniform3f(U.uLightDir, Math.sin(lRad), 0.55, Math.cos(lRad));
+  gl.uniform3fv(U.uColPrim, hex3(state.primary));
+  gl.uniform3fv(U.uColSec, hex3(state.secondary));
+  gl.uniform3fv(U.uColNose, hex3(state.nose));
+  gl.uniform3fv(U.uColEye, hex3(state.eye));
+  gl.uniform3fv(U.uColGlasses, hex3(state.glassesCol));
+  gl.uniform3fv(U.uColTongue, hex3(state.tongue));
+  gl.uniform1f(U.uJawRad, (state.jaw * Math.PI) / 180);
+  gl.uniform1f(U.uTongueOut, state.tongueOut / 100);
+  gl.uniform1f(U.uTongueCurl, state.tongueCurl / 100);
+  gl.uniform1f(U.uEyeOpen, blink);
+  gl.uniform1f(U.uEarPerk, state.ears / 100);
+  gl.uniform1f(U.uTailWag, state.wag / 100);
+  gl.uniform1f(U.uFurDetail, state.furDetail / 100);
+  gl.uniform1f(U.uCutaway, state.cutaway / 100);
+  gl.uniform1f(U.uShowGlasses, state.glasses ? 1.0 : 0.0);
+  gl.uniform1i(U.uShaderMode, state.shaderMode);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  $("hudCut").textContent = state.cutaway > 5 ? `Organ Cutaway: ${state.cutaway}%` : "Exterior Fur Mode";
+  requestAnimationFrame(render);
+}
+
+// Orbit & Zoom
+let dragging = false, lx = 0, ly = 0;
+canvas.addEventListener("mousedown", e => { dragging = true; lx = e.clientX; ly = e.clientY; });
+window.addEventListener("mouseup", () => dragging = false);
+window.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  state.targetCamYaw -= (e.clientX - lx) * 0.011;
+  state.targetCamPitch = Math.max(-0.95, Math.min(0.95, state.targetCamPitch + (e.clientY - ly) * 0.01));
+  lx = e.clientX; ly = e.clientY;
+});
+canvas.addEventListener("wheel", e => {
+  e.preventDefault();
+  state.targetCamDist = Math.max(1.45, Math.min(11.0, state.targetCamDist + e.deltaY * 0.0035));
+}, { passive: false });
+
+// 20 Random Chaotic Good Boy Audio Synths
+let audioCtx = null;
+const CHAOS_SOUNDS = [
+  ["Squeaky Toy", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(1400,t); o.frequency.exponentialRampToValueAtTime(2500,t+0.12); o.frequency.exponentialRampToValueAtTime(1100,t+0.3); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.32); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.33); }],
+  ["Boing Spring", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(560,t+0.2); o.frequency.exponentialRampToValueAtTime(220,t+0.48); g.gain.setValueAtTime(0.35,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.52); }],
+  ["Sci-Fi Laser", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(2000,t); o.frequency.exponentialRampToValueAtTime(110,t+0.38); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.4); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.42); }],
+  ["8-Bit Bark", (ac, t) => { [0, 0.18].forEach(d => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(580,t+d); o.frequency.exponentialRampToValueAtTime(230,t+d+0.12); g.gain.setValueAtTime(0.22,t+d); g.gain.exponentialRampToValueAtTime(0.001,t+d+0.14); o.connect(g).connect(ac.destination); o.start(t+d); o.stop(t+d+0.15); }); }],
+  ["Dramatic Bass Drop", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(155,t); o.frequency.exponentialRampToValueAtTime(34,t+0.72); g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.76); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.78); }],
+  ["Slide Whistle Up", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(420,t); o.frequency.exponentialRampToValueAtTime(2300,t+0.45); g.gain.setValueAtTime(0.28,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.48); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.5); }],
+  ["Kazoo Fanfare", (ac, t) => { [523,659,784,1046].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t+i*0.1); g.gain.setValueAtTime(0.2,t+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.18); o.connect(g).connect(ac.destination); o.start(t+i*0.1); o.stop(t+i*0.1+0.19); }); }],
+  ["Cartoon Bonk", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(640,t); o.frequency.exponentialRampToValueAtTime(175,t+0.18); g.gain.setValueAtTime(0.4,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.21); }],
+  ["Sparkle Chime", (ac, t) => { [1046,1318,1568,2093,2637].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(f,t+i*0.055); g.gain.setValueAtTime(0.22,t+i*0.055); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.055+0.35); o.connect(g).connect(ac.destination); o.start(t+i*0.055); o.stop(t+i*0.055+0.36); }); }],
+  ["Mystery Honk", (ac, t) => { [277,349].forEach(f => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.35); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.36); }); }],
+  ["Rubber Duck", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(360,t); o.frequency.linearRampToValueAtTime(255,t+0.24); g.gain.setValueAtTime(0.22,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.26); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.28); }],
+  ["Airhorn Triple", (ac, t) => { [0,0.14,0.28].forEach((d,idx) => { [415,523].forEach(f => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t+d); g.gain.setValueAtTime(0.16,t+d); g.gain.exponentialRampToValueAtTime(0.001,t+d+(idx===2?0.3:0.1)); o.connect(g).connect(ac.destination); o.start(t+d); o.stop(t+d+(idx===2?0.32:0.11)); }); }); }],
+  ["Chaotic Arpeggio", (ac, t) => { [330,440,554,659,880,1108,1318,987].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(f,t+i*0.045); g.gain.setValueAtTime(0.25,t+i*0.045); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.045+0.09); o.connect(g).connect(ac.destination); o.start(t+i*0.045); o.stop(t+i*0.045+0.1); }); }],
+  ["Purr Engine", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(66,t); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.55); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.56); }],
+  ["Dial-Up Screech", (ac, t) => { [950,1750,1200,2300,800,2100].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(f,t+i*0.06); g.gain.setValueAtTime(0.14,t+i*0.06); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.06+0.055); o.connect(g).connect(ac.destination); o.start(t+i*0.06); o.stop(t+i*0.06+0.06); }); }],
+  ["Dramatic Opera", (ac, t) => { [261,329,392,523].forEach(f => { const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.14,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.7); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.72); }); }],
+  ["Frog Ribbit", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(620,t+0.26); g.gain.setValueAtTime(0.24,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.28); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.3); }],
+  ["Confetti Pop", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(240,t); o.frequency.exponentialRampToValueAtTime(60,t+0.12); g.gain.setValueAtTime(0.45,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.14); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.15); }],
+  ["Alien Wobble", (ac, t) => { const o=ac.createOscillator(), lfo=ac.createOscillator(), lg=ac.createGain(), g=ac.createGain(); o.frequency.setValueAtTime(520,t); lfo.frequency.setValueAtTime(15,t); lg.gain.setValueAtTime(220,t); lfo.connect(lg).connect(o.frequency); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g).connect(ac.destination); o.start(t); lfo.start(t); o.stop(t+0.52); lfo.stop(t+0.52); }],
+  ["Microwave Ding", (ac, t) => { [2240,4480].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(i?0.12:0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.8); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.82); }); }]
+];
+
+function triggerGoodBoy() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const [label, fn] = CHAOS_SOUNDS[Math.floor(Math.random() * CHAOS_SOUNDS.length)];
+  fn(audioCtx, audioCtx.currentTime);
+  state.gbCount++;
+  state.shake = 1.0;
+  state.jaw = Math.floor(36 + Math.random() * 32);
+  state.tongueOut = Math.floor(55 + Math.random() * 45);
+  syncUI();
+  $("gbToast").textContent = `🔊 Unexplained Good Boy Audio: ${label}!`;
+  $("gbMeta").textContent = `Good Boy Presses: ${state.gbCount} | Last Played: ${label}`;
+  const div = document.createElement("div");
+  div.className = "log-entry";
+  div.textContent = `#${String(state.gbCount).padStart(2, "0")} -> ${label}`;
+  $("audioLog").prepend(div);
+}
+
+PRESETS.forEach(p => {
+  const b = document.createElement("button");
+  b.className = "toggle-btn"; b.textContent = p.name;
+  b.onclick = () => { Object.assign(state, p); syncUI(); };
+  $("presetGrid").appendChild(b);
+});
+
+function syncUI() {
+  $("selStyle").value = String(state.shaderMode);
+  $("colPrimary").value = state.primary;
+  $("colSecondary").value = state.secondary;
+  $("colNose").value = state.nose;
+  $("colEye").value = state.eye;
+  $("colGlasses").value = state.glassesCol;
+  $("colTongue").value = state.tongue;
+  $("btnGlasses").textContent = `Glasses: ${state.glasses ? "ON" : "OFF"}`;
+  $("btnGlasses").classList.toggle("active", state.glasses);
+  $("btnToggleCut").textContent = state.cutaway > 50 ? "Hide Organs" : "Show Organs";
+  $("btnToggleCut").classList.toggle("active", state.cutaway > 50);
+  $("slCut").value = state.cutaway; $("valCut").textContent = state.cutaway + "%";
+  $("slJaw").value = state.jaw; $("valJaw").textContent = state.jaw + "°";
+  $("slTongueOut").value = state.tongueOut; $("valTongueOut").textContent = state.tongueOut + "%";
+  $("slTongueCurl").value = state.tongueCurl; $("valTongueCurl").textContent = state.tongueCurl + "%";
+  $("slEyeOpen").value = state.eyeOpen; $("valEyeOpen").textContent = state.eyeOpen + "%";
+  $("slEars").value = state.ears; $("valEars").textContent = state.ears + "%";
+  $("slWag").value = state.wag; $("valWag").textContent = state.wag + "%";
+  $("slFur").value = state.furDetail; $("valFur").textContent = state.furDetail + "%";
+  $("slLight").value = state.lightAngle; $("valLight").textContent = state.lightAngle + "°";
+}
+
+$("selQuality").addEventListener("input", e => { state.quality = Number(e.target.value); applyQuality(); });
+$("selStyle").addEventListener("input", e => state.shaderMode = Number(e.target.value));
+[["colPrimary","primary"],["colSecondary","secondary"],["colNose","nose"],["colEye","eye"],["colGlasses","glassesCol"],["colTongue","tongue"]].forEach(([id,k]) => {
+  $(id).addEventListener("input", e => state[k] = e.target.value);
+});
+[["slCut","cutaway","valCut","%"],["slJaw","jaw","valJaw","°"],["slTongueOut","tongueOut","valTongueOut","%"],["slTongueCurl","tongueCurl","valTongueCurl","%"],["slEyeOpen","eyeOpen","valEyeOpen","%"],["slEars","ears","valEars","%"],["slWag","wag","valWag","%"],["slFur","furDetail","valFur","%"],["slLight","lightAngle","valLight","°"]].forEach(([id,k,vid,u]) => {
+  $(id).addEventListener("input", e => { state[k] = Number(e.target.value); $(vid).textContent = state[k] + u; if (k === "cutaway") syncUI(); });
+});
+
+// 4 Dedicated Studio Cameras
+$("camFull").onclick = () => { state.targetCamYaw = -0.22; state.targetCamPitch = 0.05; state.targetCamDist = 7.4; state.targetCamY = -1.85; };
+$("camFace").onclick = () => { state.targetCamYaw = -0.14; state.targetCamPitch = 0.04; state.targetCamDist = 3.15; state.targetCamY = 0.12; };
+$("camMouth").onclick = () => { state.jaw = 64; state.tongueOut = 32; state.targetCamYaw = 0.04; state.targetCamPitch = -0.05; state.targetCamDist = 1.80; state.targetCamY = -0.18; syncUI(); };
+$("camOrgans").onclick = () => { state.cutaway = 92; state.targetCamYaw = -0.16; state.targetCamPitch = 0.04; state.targetCamDist = 3.65; state.targetCamY = -1.92; syncUI(); };
+
+$("btnToggleCut").onclick = () => { state.cutaway = state.cutaway > 50 ? 0 : 92; syncUI(); };
+$("btnGlasses").onclick = () => { state.glasses = !state.glasses; syncUI(); };
+$("btnSpin").onclick = e => { state.autoSpin = !state.autoSpin; e.target.textContent = `Turntable: ${state.autoSpin ? "ON" : "OFF"}`; e.target.classList.toggle("active", state.autoSpin); };
+$("btnGoodBoy").onclick = triggerGoodBoy;
+
+$("poseSmile").onclick = () => { Object.assign(state, { jaw: 34, tongueOut: 62, tongueCurl: 10, eyeOpen: 100 }); syncUI(); };
+$("poseWide").onclick = () => { Object.assign(state, { jaw: 66, tongueOut: 22, eyeOpen: 100 }); syncUI(); };
+$("poseBlep").onclick = () => { Object.assign(state, { jaw: 42, tongueOut: 100, tongueCurl: 24 }); syncUI(); };
+$("poseSnarl").onclick = () => { Object.assign(state, { jaw: 32, tongueOut: 0, eyeOpen: 65, ears: 95 }); syncUI(); };
+$("poseSleep").onclick = () => { Object.assign(state, { jaw: 8, tongueOut: 12, eyeOpen: 18, ears: 25 }); syncUI(); };
+$("poseShut").onclick = () => { Object.assign(state, { jaw: 0, tongueOut: 0, eyeOpen: 100 }); syncUI(); };
+
+$("btnRandomAll").onclick = () => {
+  const rh = () => "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
+  state.primary = rh(); state.eye = rh(); state.glassesCol = rh();
+  state.jaw = Math.floor(Math.random()*66); state.tongueOut = Math.floor(Math.random()*100);
+  syncUI();
+};
+$("btnPng").onclick = () => {
+  const a = document.createElement("a");
+  a.download = "blue_wolf_fullbody_v8.png";
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+};
+
+applyQuality();
+syncUI();
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

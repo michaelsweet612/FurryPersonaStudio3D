@@ -1,0 +1,16 @@
+{
+  "id": "neon_wolf",
+  "name": "Byte",
+  "species": "Wolf",
+  "style": "Cyber-Neon",
+  "pronouns": "they/them",
+  "primary_color": "#2B1E5C",
+  "secondary_color": "#D8F3FF",
+  "accent_color": "#00F5D4",
+  "eye_color": "#FF2A85",
+  "expression": "Smug",
+  "marking": "Cyber-Circuits",
+  "accessory": "Cyber Visor",
+  "background": "Neon Grid",
+  "bio": "Midnight arcade speedrunner who collects broken synths and never sleeps before 4 AM."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "arcade_proto",
+  "name": "QX-99",
+  "species": "Protogen",
+  "style": "Retro Pixel",
+  "pronouns": "it/they",
+  "primary_color": "#1A1A2E",
+  "secondary_color": "#39FF14",
+  "accent_color": "#00E5FF",
+  "eye_color": "#39FF14",
+  "expression": "Happy",
+  "marking": "Cyber-Circuits",
+  "accessory": "Headphones",
+  "background": "Arcade CRT",
+  "bio": "Runs on 4KB of RAM, pure chiptune energy, and questionable amounts of thermal paste."
+}

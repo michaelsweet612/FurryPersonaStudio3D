@@ -1,0 +1,16 @@
+{
+  "id": "ink_dragon",
+  "name": "Cinder",
+  "species": "Dragon",
+  "style": "Comic Ink",
+  "pronouns": "he/him",
+  "primary_color": "#E63946",
+  "secondary_color": "#FFB703",
+  "accent_color": "#FB8500",
+  "eye_color": "#023047",
+  "expression": "Fierce",
+  "marking": "Stripes",
+  "accessory": "Crown",
+  "background": "Comic Halftone",
+  "bio": "Hoards vintage comic books instead of gold and breathes mildly spicy cinnamon sparks."
+}

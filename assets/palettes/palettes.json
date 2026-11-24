@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Cyber Neon",
+    "primary": "#2B1E5C",
+    "secondary": "#E0F7FA",
+    "accent": "#00F5D4",
+    "eyes": "#FF2A85"
+  },
+  {
+    "name": "Sakura Fox",
+    "primary": "#FF8FA3",
+    "secondary": "#FFF0F3",
+    "accent": "#FF4D6D",
+    "eyes": "#590D22"
+  },
+  {
+    "name": "Midnight Wolf",
+    "primary": "#2D3142",
+    "secondary": "#BFC0C0",
+    "accent": "#EF8354",
+    "eyes": "#FFD166"
+  },
+  {
+    "name": "Mint Choco",
+    "primary": "#5C4033",
+    "secondary": "#A8E6CF",
+    "accent": "#DCEDC1",
+    "eyes": "#3B7A57"
+  },
+  {
+    "name": "Solar Dragon",
+    "primary": "#E63946",
+    "secondary": "#FFB703",
+    "accent": "#FB8500",
+    "eyes": "#023047"
+  },
+  {
+    "name": "Cotton Candy",
+    "primary": "#A2D2FF",
+    "secondary": "#FFC8DD",
+    "accent": "#CDB4DB",
+    "eyes": "#FFAFCC"
+  },
+  {
+    "name": "Toxic Proto",
+    "primary": "#1A1A2E",
+    "secondary": "#39FF14",
+    "accent": "#00E5FF",
+    "eyes": "#39FF14"
+  },
+  {
+    "name": "Autumn Maple",
+    "primary": "#D95D39",
+    "secondary": "#F4E8C1",
+    "accent": "#582F0E",
+    "eyes": "#84A98C"
+  },
+  {
+    "name": "Vaporwave Sunset",
+    "primary": "#7B2CBF",
+    "secondary": "#FF9E00",
+    "accent": "#FF006E",
+    "eyes": "#00F5D4"
+  },
+  {
+    "name": "Arctic Frost",
+    "primary": "#CAF0F8",
+    "secondary": "#FFFFFF",
+    "accent": "#00B4D8",
+    "eyes": "#03045E"
+  },
+  {
+    "name": "Golden Retriever",
+    "primary": "#E0A458",
+    "secondary": "#FFF3D6",
+    "accent": "#A66321",
+    "eyes": "#4A2C11"
+  },
+  {
+    "name": "Galaxy Void",
+    "primary": "#10002B",
+    "secondary": "#9D4EDD",
+    "accent": "#FF6D00",
+    "eyes": "#E0AAFF"
+  }
+]

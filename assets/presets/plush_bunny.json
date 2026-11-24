@@ -1,0 +1,16 @@
+{
+  "id": "plush_bunny",
+  "name": "Clover",
+  "species": "Bunny",
+  "style": "Pastel Plush",
+  "pronouns": "he/they",
+  "primary_color": "#A2D2FF",
+  "secondary_color": "#FFF6FA",
+  "accent_color": "#FFC8DD",
+  "eye_color": "#7209B7",
+  "expression": "Sleepy",
+  "marking": "Spots",
+  "accessory": "Collar Bell",
+  "background": "Pastel Clouds",
+  "bio": "Certified nap champion who brings warm blankets and chamomile tea to every hangout."
+}

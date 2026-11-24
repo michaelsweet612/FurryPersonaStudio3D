@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Furry Persona Studio v2.4 — Free Multi-Style Creator</title>
+<style>
+  :root {
+    --bg: #120f20;
+    --card: #1d1833;
+    --card2: #292247;
+    --accent: #00f5d4;
+    --pink: #ff2a85;
+    --gold: #ffd166;
+    --text: #f3efff;
+    --muted: #b8aed8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: #1a1530;
+    border-bottom: 2px solid #2f2654;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.08s ease, filter 0.12s ease;
+  }
+  button:hover { filter: brightness(1.12); }
+  button:active { transform: scale(0.96); }
+  .btn-purple { background: #7b2cbf; }
+  .btn-teal { background: #2a9d8f; }
+  .btn-blue { background: #3a86ff; }
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr 300px;
+    gap: 16px;
+    padding: 16px;
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid #2f2752;
+  }
+  .panel h2 {
+    margin: 0 0 10px 0;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .preset-btn {
+    background: var(--card2);
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 9px;
+    gap: 8px;
+  }
+  .field label {
+    font-size: 0.86rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  select, input[type="text"], textarea {
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid #3c3366;
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-size: 0.88rem;
+  }
+  select { width: 168px; }
+  .colors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0 14px 0;
+  }
+  .color-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card2);
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+  .color-box input[type="color"] {
+    width: 34px;
+    height: 26px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  canvas {
+    border-radius: 14px;
+    border: 2px solid var(--accent);
+    background: #0d0821;
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  }
+  .goodboy-box {
+    width: 100%;
+    max-width: 480px;
+    background: linear-gradient(135deg, #2b1544, #1e1435);
+    border: 2px solid var(--pink);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+  }
+  .goodboy-btn {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1.25rem;
+    letter-spacing: 0.06em;
+    background: linear-gradient(90deg, #ff2a85, #ff6b35);
+    box-shadow: 0 4px 18px rgba(255, 42, 133, 0.45);
+  }
+  .gb-toast {
+    margin-top: 10px;
+    font-weight: 700;
+    color: var(--gold);
+    min-height: 22px;
+    font-size: 0.94rem;
+  }
+  .gb-meta {
+    margin-top: 4px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .stack { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+  }
+  .bar-bg {
+    width: 125px;
+    height: 9px;
+    background: #120f20;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00f5d4, #3a86ff);
+  }
+  .log-box {
+    background: #120f20;
+    border-radius: 8px;
+    padding: 8px;
+    height: 165px;
+    overflow-y: auto;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--gold);
+  }
+  .log-entry { padding: 2px 0; border-bottom: 1px solid #241e3d; }
+</style>
+</head>
+<body>
+<header>
+  <h1>FURRY PERSONA STUDIO v2.4 &nbsp;|&nbsp; 6 FREE STYLES &nbsp;|&nbsp; 8 SPECIES</h1>
+  <div class="toolbar">
+    <button class="btn-purple" id="btnRandom">Randomize All</button>
+    <button class="btn-teal" id="btnPng">Download PNG</button>
+    <button class="btn-blue" id="btnJson">Export JSON</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <h2>Free Starter Presets</h2>
+    <div class="preset-grid" id="presetGrid"></div>
+
+    <h2>Style &amp; Species</h2>
+    <div class="field"><label>Art Style (Free)</label><select id="selStyle"></select></div>
+    <div class="field"><label>Species</label><select id="selSpecies"></select></div>
+    <div class="field"><label>Expression</label><select id="selExpr"></select></div>
+    <div class="field"><label>Markings</label><select id="selMarking"></select></div>
+    <div class="field"><label>Accessory</label><select id="selAcc"></select></div>
+    <div class="field"><label>Background</label><select id="selBg"></select></div>
+
+    <h2>Colors</h2>
+    <div class="colors">
+      <div class="color-box"><span>Primary</span><input type="color" id="colPrimary" /></div>
+      <div class="color-box"><span>Secondary</span><input type="color" id="colSecondary" /></div>
+      <div class="color-box"><span>Accent</span><input type="color" id="colAccent" /></div>
+      <div class="color-box"><span>Eyes</span><input type="color" id="colEye" /></div>
+    </div>
+  </section>
+
+  <section class="center-col">
+    <canvas id="studioCanvas" width="480" height="460"></canvas>
+    <div class="goodboy-box">
+      <button class="goodboy-btn" id="btnGoodBoy">🐾 GOOD BOY 🐾</button>
+      <div class="gb-toast" id="gbToast">Press for completely random, unexplained audio.</div>
+      <div class="gb-meta" id="gbMeta">Good Boy Presses: 0 | 15 Random Chaotic Sounds Ready</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Persona Identity</h2>
+    <div class="stack">
+      <input type="text" id="inpName" placeholder="Persona Name" />
+      <input type="text" id="inpPronouns" placeholder="Pronouns" />
+      <textarea id="inpBio" rows="3" placeholder="Bio / Lore"></textarea>
+    </div>
+
+    <h2>Derived Stats</h2>
+    <div id="statsBox"></div>
+
+    <h2 style="margin-top:14px;color:#ff2a85;">Good Boy Audio Log</h2>
+    <div class="log-box" id="audioLog"></div>
+  </section>
+</main>
+
+<script>
+const STYLES = ["Cyber-Neon", "Anime Cel", "Retro Pixel", "Pastel Plush", "Comic Ink", "Vaporwave"];
+const SPECIES = ["Wolf", "Fox", "Cat", "Dragon", "Protogen", "Bunny", "Red Panda", "Hyena"];
+const EXPRS = ["Happy", "Smug", "Blep", "Fierce", "Sleepy", "Derpy"];
+const MARKINGS = ["None", "Stripes", "Spots", "Stars", "Cyber-Circuits", "Galaxy"];
+const ACCESSORIES = ["None", "Cyber Visor", "Scarf", "Headphones", "Crown", "Bandana", "Round Glasses", "Collar Bell", "Halo"];
+const BACKGROUNDS = ["Neon Grid", "Starfield", "Arcade CRT", "Pastel Clouds", "Comic Halftone", "Vapor Sunset"];
+
+const PRESETS = [
+  { name: "Byte", species: "Wolf", style: "Cyber-Neon", pronouns: "they/them", primary: "#2B1E5C", secondary: "#D8F3FF", accent: "#00F5D4", eye: "#FF2A85", expr: "Smug", marking: "Cyber-Circuits", acc: "Cyber Visor", bg: "Neon Grid", bio: "Midnight arcade speedrunner who collects broken synths." },
+  { name: "Mochi", species: "Fox", style: "Anime Cel", pronouns: "she/her", primary: "#FF8FA3", secondary: "#FFF0F3", accent: "#FF4D6D", eye: "#3A0CA3", expr: "Blep", marking: "Stars", acc: "Scarf", bg: "Starfield", bio: "Boba tea enthusiast with nine imaginary tails." },
+  { name: "QX-99", species: "Protogen", style: "Retro Pixel", pronouns: "it/they", primary: "#1A1A2E", secondary: "#39FF14", accent: "#00E5FF", eye: "#39FF14", expr: "Happy", marking: "Cyber-Circuits", acc: "Headphones", bg: "Arcade CRT", bio: "Runs on 4KB of RAM and pure chiptune energy." },
+  { name: "Clover", species: "Bunny", style: "Pastel Plush", pronouns: "he/they", primary: "#A2D2FF", secondary: "#FFF6FA", accent: "#FFC8DD", eye: "#7209B7", expr: "Sleepy", marking: "Spots", acc: "Collar Bell", bg: "Pastel Clouds", bio: "Certified nap champion and warm blanket supplier." },
+  { name: "Cinder", species: "Dragon", style: "Comic Ink", pronouns: "he/him", primary: "#E63946", secondary: "#FFB703", accent: "#FB8500", eye: "#023047", expr: "Fierce", marking: "Stripes", acc: "Crown", bg: "Comic Halftone", bio: "Hoards vintage comic books instead of gold." },
+  { name: "Nova", species: "Cat", style: "Vaporwave", pronouns: "she/they", primary: "#7B2CBF", secondary: "#FF9E00", accent: "#FF006E", eye: "#00F5D4", expr: "Derpy", marking: "Galaxy", acc: "Round Glasses", bg: "Vapor Sunset", bio: "Composes lo-fi cassette tapes from 1994." }
+];
+
+let state = { ...PRESETS[0] };
+let gbCount = 0;
+let audioCtx = null;
+
+const $ = id => document.getElementById(id);
+const canvas = $("studioCanvas");
+const ctx = canvas.getContext("2d");
+
+function populateSelect(id, list) {
+  const el = $(id);
+  el.innerHTML = list.map(v => `<option value="${v}">${v}</option>`).join("");
+}
+
+function syncUI() {
+  $("selStyle").value = state.style;
+  $("selSpecies").value = state.species;
+  $("selExpr").value = state.expr;
+  $("selMarking").value = state.marking;
+  $("selAcc").value = state.acc;
+  $("selBg").value = state.bg;
+  $("colPrimary").value = state.primary;
+  $("colSecondary").value = state.secondary;
+  $("colAccent").value = state.accent;
+  $("colEye").value = state.eye;
+  $("inpName").value = state.name;
+  $("inpPronouns").value = state.pronouns;
+  $("inpBio").value = state.bio;
+  renderStats();
+  renderCanvas();
+}
+
+function renderStats() {
+  const seed = `${state.name}|${state.species}|${state.style}|${state.expr}|${state.acc}`;
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+  const stats = [
+    ["Fluffiness", 50 + (Math.abs(h) % 51)],
+    ["Chaos", 35 + (Math.abs(h >> 4) % 66)],
+    ["Style", 60 + (Math.abs(h >> 8) % 41)],
+    ["Boopability", 55 + (Math.abs(h >> 12) % 46)],
+    ["Good Boy Aura", 75 + (Math.abs(h >> 16) % 26)]
+  ];
+  $("statsBox").innerHTML = stats.map(([k, v]) => `
+    <div class="stat-row">
+      <span>${k}: <strong>${v}</strong></span>
+      <div class="bar-bg"><div class="bar-fill" style="width:${v}%"></div></div>
+    </div>`).join("");
+}
+
+function drawPoly(pts, fill, stroke, lw = 3) {
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); }
+}
+
+function drawEllipse(x, y, rx, ry, fill, stroke, lw = 3) {
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); }
+}
+
+function renderCanvas(dx = 0, dy = 0) {
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2 + dx, cy = h / 2 + 14 + dy;
+  const oc = state.style === "Cyber-Neon" ? state.accent : state.style === "Vaporwave" ? "#FF007F" : "#111111";
+  const ow = state.style === "Comic Ink" ? 5 : 3;
+
+  // Background
+  ctx.clearRect(0, 0, w, h);
+  if (state.bg === "Neon Grid") {
+    ctx.fillStyle = "#0D0821"; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "#2A1459"; ctx.lineWidth = 1;
+    for (let y = 250; y < h; y += 22) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    for (let x = 0; x <= w; x += 36) { ctx.beginPath(); ctx.moveTo(w/2 + (x-w/2)*0.35, 250); ctx.lineTo(x, h); ctx.stroke(); }
+    drawEllipse(w/2, 160, 115, 115, "#1E1042", state.accent, 2);
+  } else if (state.bg === "Pastel Clouds") {
+    ctx.fillStyle = "#FCEBF6"; ctx.fillRect(0, 0, w, h);
+    [[80,85,48],[135,75,55],[360,95,52],[415,105,40],[95,380,62],[380,375,65]].forEach(([x,y,r]) => drawEllipse(x,y,r,r,"#FFF",null));
+  } else if (state.bg === "Comic Halftone") {
+    ctx.fillStyle = "#FFF6D6"; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#F3D89A";
+    for (let x = 18; x < w; x += 24) for (let y = 18; y < h; y += 24) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill(); }
+  } else if (state.bg === "Arcade CRT") {
+    ctx.fillStyle = "#091215"; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#0F252B";
+    for (let y = 0; y < h; y += 8) ctx.fillRect(0, y, w, 2);
+    ctx.strokeStyle = "#39FF14"; ctx.lineWidth = 3; ctx.strokeRect(14, 14, w-28, h-28);
+  } else if (state.bg === "Vapor Sunset") {
+    ctx.fillStyle = "#240046"; ctx.fillRect(0, 0, w, h);
+    drawEllipse(w/2, 175, 130, 130, "#FF6D00", null);
+    ctx.fillStyle = "#240046";
+    for (let y = 175; y < 305; y += 18) ctx.fillRect(w/2-135, y, 270, 6);
+    ctx.fillStyle = "#3C096C"; ctx.fillRect(0, 305, w, h-305);
+  } else {
+    ctx.fillStyle = "#11132A"; ctx.fillRect(0, 0, w, h);
+    for (let i = 0; i < 60; i++) {
+      const sx = (i * 73) % w, sy = (i * 137) % h;
+      ctx.fillStyle = i % 3 === 0 ? state.accent : "#FFFFFF";
+      ctx.beginPath(); ctx.arc(sx, sy, (i % 3) + 1, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Shoulders & chest fluff
+  drawEllipse(cx, cy + 160, 112, 82, state.primary, oc, ow);
+  drawPoly([[cx-46,cy+105],[cx-20,cy+152],[cx,cy+130],[cx+20,cy+152],[cx+46,cy+105],[cx,cy+90]], state.secondary, oc, 2);
+
+  // Ears / Horns
+  if (state.species === "Bunny") {
+    drawEllipse(cx-58, cy-135, 30, 84, state.primary, oc, ow);
+    drawEllipse(cx-58, cy-135, 14, 64, state.secondary, null);
+    drawEllipse(cx+58, cy-135, 30, 84, state.primary, oc, ow);
+    drawEllipse(cx+58, cy-135, 14, 64, state.secondary, null);
+  } else if (state.species === "Red Panda" || state.species === "Hyena") {
+    drawEllipse(cx-82, cy-96, 40, 40, state.primary, oc, ow);
+    drawEllipse(cx-82, cy-96, 22, 22, state.secondary, null);
+    drawEllipse(cx+82, cy-96, 40, 40, state.primary, oc, ow);
+    drawEllipse(cx+82, cy-96, 22, 22, state.secondary, null);
+  } else if (state.species === "Dragon") {
+    drawPoly([[cx-58,cy-88],[cx-104,cy-188],[cx-32,cy-110]], state.accent, oc, ow);
+    drawPoly([[cx+58,cy-88],[cx+104,cy-188],[cx+32,cy-110]], state.accent, oc, ow);
+    drawPoly([[cx-95,cy-35],[cx-158,cy-72],[cx-106,cy+6]], state.secondary, oc, ow);
+    drawPoly([[cx+95,cy-35],[cx+158,cy-72],[cx+106,cy+6]], state.secondary, oc, ow);
+  } else if (state.species === "Fox") {
+    drawPoly([[cx-115,cy-25],[cx-135,cy-192],[cx-22,cy-92]], state.primary, oc, ow);
+    drawPoly([[cx-102,cy-46],[cx-116,cy-156],[cx-42,cy-88]], state.secondary, null);
+    drawPoly([[cx+115,cy-25],[cx+135,cy-192],[cx+22,cy-92]], state.primary, oc, ow);
+    drawPoly([[cx+102,cy-46],[cx+116,cy-156],[cx+42,cy-88]], state.secondary, null);
+  } else if (state.species === "Protogen") {
+    drawPoly([[cx-92,cy-55],[cx-152,cy-155],[cx-38,cy-98]], state.primary, oc, ow);
+    drawPoly([[cx-92,cy-68],[cx-132,cy-136],[cx-56,cy-95]], state.accent, null);
+    drawPoly([[cx+92,cy-55],[cx+152,cy-155],[cx+38,cy-98]], state.primary, oc, ow);
+    drawPoly([[cx+92,cy-68],[cx+132,cy-136],[cx+56,cy-95]], state.accent, null);
+  } else {
+    const eh = state.species === "Wolf" ? 168 : 150;
+    drawPoly([[cx-104,cy-35],[cx-98,cy-eh],[cx-22,cy-90]], state.primary, oc, ow);
+    drawPoly([[cx-88,cy-48],[cx-88,cy-eh+30],[cx-38,cy-84]], state.secondary, null);
+    drawPoly([[cx+104,cy-35],[cx+98,cy-eh],[cx+22,cy-90]], state.primary, oc, ow);
+    drawPoly([[cx+88,cy-48],[cx+88,cy-eh+30],[cx+38,cy-84]], state.secondary, null);
+  }
+
+  // Head & Cheek Fluff
+  drawPoly([[cx-106,cy+5],[cx-128,cy+28],[cx-102,cy+44],[cx-114,cy+64],[cx-72,cy+72]], state.primary, oc, ow);
+  drawPoly([[cx+106,cy+5],[cx+128,cy+28],[cx+102,cy+44],[cx+114,cy+64],[cx+72,cy+72]], state.primary, oc, ow);
+  drawEllipse(cx, cy, 108, 104, state.primary, oc, ow);
+  drawPoly([[cx-28,cy-98],[cx-8,cy-132],[cx+8,cy-104],[cx+28,cy-124],[cx+32,cy-88]], state.accent, oc, 2);
+
+  // Markings
+  ctx.fillStyle = state.accent;
+  ctx.strokeStyle = state.accent;
+  if (state.marking === "Stripes") {
+    ctx.lineWidth = 6; ctx.lineCap = "round";
+    [-68,-48,-28].forEach(d => {
+      ctx.beginPath(); ctx.moveTo(cx-88, cy+d); ctx.lineTo(cx-54, cy+d+8); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx+88, cy+d); ctx.lineTo(cx+54, cy+d+8); ctx.stroke();
+    });
+  } else if (state.marking === "Spots") {
+    [[-72,-45,9],[-58,-22,6],[72,-45,9],[58,-22,6],[-18,-74,7],[16,-68,8]].forEach(([x,y,r]) => drawEllipse(cx+x, cy+y, r, r, state.accent, null));
+  } else if (state.marking === "Cyber-Circuits") {
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(cx-85,cy-32); ctx.lineTo(cx-58,cy-32); ctx.lineTo(cx-48,cy-52); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+85,cy-32); ctx.lineTo(cx+58,cy-32); ctx.lineTo(cx+48,cy-52); ctx.stroke();
+    drawEllipse(cx-48, cy-52, 4, 4, state.accent, null);
+    drawEllipse(cx+48, cy-52, 4, 4, state.accent, null);
+  } else if (state.marking === "Stars" || state.marking === "Galaxy") {
+    [[-64,-36,7],[64,-36,7],[0,-70,8],[-36,-64,4],[36,-62,4]].forEach(([x,y,r]) => drawEllipse(cx+x, cy+y, r, r, state.accent, null));
+  }
+
+  // Face
+  if (state.species === "Protogen") {
+    drawEllipse(cx, cy + 16, 88, 56, "#0B0F1A", state.accent, 4);
+    drawEllipse(cx-38, cy-4, 16, 16, state.eye, null);
+    drawEllipse(cx+38, cy-4, 16, 16, state.eye, null);
+    ctx.strokeStyle = state.secondary; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(cx-34, cy+36); ctx.lineTo(cx-14, cy+48); ctx.lineTo(cx, cy+36); ctx.lineTo(cx+14, cy+48); ctx.lineTo(cx+34, cy+36); ctx.stroke();
+  } else {
+    drawEllipse(cx, cy + 50, 62, 44, state.secondary, oc, 2);
+    [-1, 1].forEach(side => {
+      const ex = cx + side * 44, ey = cy - 16;
+      if (state.expr === "Sleepy") {
+        ctx.strokeStyle = "#111"; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(ex, ey, 18, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke();
+      } else {
+        drawEllipse(ex, ey, 20, 22, "#FFF", "#111", 2);
+        const px = state.expr === "Derpy" ? (side === -1 ? 6 : -6) : 0;
+        const py = state.expr === "Derpy" ? (side === -1 ? -5 : 5) : 0;
+        drawEllipse(ex+px, ey+py, 13, 14, state.eye, null);
+        drawEllipse(ex+px, ey+py, 6, 7, "#111", null);
+        drawEllipse(ex-6, ey-8, 4, 4, "#FFF", null);
+        if (state.expr === "Smug") {
+          ctx.fillStyle = state.primary; ctx.fillRect(ex-22, ey-24, 44, 18);
+          ctx.strokeStyle = "#111"; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(ex-22, ey-6); ctx.lineTo(ex+22, ey-6); ctx.stroke();
+        } else if (state.expr === "Fierce") {
+          ctx.strokeStyle = "#111"; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(ex-20, ey-24+(side===1?8:-4)); ctx.lineTo(ex+20, ey-24+(side===1?-4:8)); ctx.stroke();
+        }
+      }
+    });
+    drawPoly([[cx-14,cy+26],[cx+14,cy+26],[cx,cy+44]], "#1A1326", null);
+    ctx.strokeStyle = "#1A1326"; ctx.lineWidth = 3;
+    if (state.expr === "Fierce") {
+      ctx.beginPath(); ctx.arc(cx, cy+64, 22, 1.1*Math.PI, 1.9*Math.PI); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(cx-14, cy+48, 14, 0, Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx+14, cy+48, 14, 0, Math.PI); ctx.stroke();
+      if (state.expr === "Blep") drawEllipse(cx, cy+66, 11, 13, "#FF6B9D", "#1A1326", 2);
+    }
+    if (state.style === "Anime Cel" || state.style === "Pastel Plush") {
+      drawEllipse(cx-62, cy+20, 15, 8, "rgba(255,107,157,0.55)", null);
+      drawEllipse(cx+62, cy+20, 15, 8, "rgba(255,107,157,0.55)", null);
+    }
+  }
+
+  // Accessories
+  if (state.acc === "Cyber Visor") {
+    ctx.strokeStyle = state.accent; ctx.lineWidth = 4;
+    ctx.strokeRect(cx-86, cy-36, 172, 42);
+  } else if (state.acc === "Crown") {
+    drawPoly([[cx-46,cy-98],[cx-54,cy-148],[cx-20,cy-120],[cx,cy-158],[cx+20,cy-120],[cx+54,cy-148],[cx+46,cy-98]], "#FFD166", "#B07D00", 3);
+  } else if (state.acc === "Headphones") {
+    ctx.strokeStyle = state.accent; ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.arc(cx, cy-12, 114, Math.PI, 2*Math.PI); ctx.stroke();
+    drawEllipse(cx-112, cy-4, 18, 32, "#22223B", state.accent, 3);
+    drawEllipse(cx+112, cy-4, 18, 32, "#22223B", state.accent, 3);
+  } else if (state.acc === "Scarf") {
+    ctx.fillStyle = state.accent; ctx.strokeStyle = oc; ctx.lineWidth = 2;
+    ctx.fillRect(cx-72, cy+88, 144, 36); ctx.strokeRect(cx-72, cy+88, 144, 36);
+  } else if (state.acc === "Bandana") {
+    drawPoly([[cx-68,cy+92],[cx+68,cy+92],[cx,cy+158]], state.accent, oc, 2);
+  } else if (state.acc === "Round Glasses") {
+    drawEllipse(cx-44, cy-16, 25, 23, null, "#1A1A2E", 4);
+    drawEllipse(cx+44, cy-16, 25, 23, null, "#1A1A2E", 4);
+    ctx.strokeStyle = "#1A1A2E"; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(cx-19, cy-16); ctx.lineTo(cx+19, cy-16); ctx.stroke();
+  } else if (state.acc === "Collar Bell") {
+    ctx.fillStyle = "#E63946"; ctx.fillRect(cx-64, cy+92, 128, 18);
+    drawEllipse(cx, cy+120, 14, 14, "#FFD166", "#B07D00", 2);
+  } else if (state.acc === "Halo") {
+    drawEllipse(cx, cy-142, 58, 14, null, "#FFE066", 5);
+  }
+
+  // Style HUD overlay
+  ctx.font = "bold 12px Consolas, monospace";
+  if (state.style === "Cyber-Neon") {
+    ctx.fillStyle = state.accent;
+    ctx.fillText(`SYS://FREE_STYLE :: ${state.species.toUpperCase()}`, 18, 26);
+  } else if (state.style === "Retro Pixel") {
+    ctx.fillStyle = "#39FF14";
+    ctx.fillText("1P  FREE MODE  999900", 24, 32);
+  } else if (state.style === "Comic Ink") {
+    ctx.strokeStyle = "#0B0B0B"; ctx.lineWidth = 6; ctx.strokeRect(8, 8, w-16, h-16);
+    ctx.fillStyle = "#FFD166"; ctx.fillRect(w-132, 18, 114, 26);
+    ctx.fillStyle = "#0B0B0B"; ctx.fillText("FREE ISSUE #1", w-122, 35);
+  } else if (state.style === "Vaporwave") {
+    ctx.fillStyle = "#00F5D4";
+    ctx.fillText("PLAY ▶ 1994 // AESTHETIC", 18, h - 18);
+  }
+}
+
+// 15 Random Chaotic Web Audio Synthesizers for the GOOD BOY button
+const CHAOS_SOUNDS = [
+  ["Squeaky Toy", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(1400,t); o.frequency.exponentialRampToValueAtTime(2400,t+0.12); o.frequency.exponentialRampToValueAtTime(1200,t+0.3); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.32); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.33); }],
+  ["Boing Spring", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(520,t+0.2); o.frequency.exponentialRampToValueAtTime(240,t+0.45); g.gain.setValueAtTime(0.35,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.52); }],
+  ["Sci-Fi Laser", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(1900,t); o.frequency.exponentialRampToValueAtTime(120,t+0.38); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.4); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.42); }],
+  ["8-Bit Bark", (ac, t) => { [0, 0.18].forEach(d => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(560,t+d); o.frequency.exponentialRampToValueAtTime(240,t+d+0.12); g.gain.setValueAtTime(0.22,t+d); g.gain.exponentialRampToValueAtTime(0.001,t+d+0.14); o.connect(g).connect(ac.destination); o.start(t+d); o.stop(t+d+0.15); }); }],
+  ["Dramatic Bass Drop", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(36,t+0.7); g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.75); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.76); }],
+  ["Slide Whistle Up", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(420,t); o.frequency.exponentialRampToValueAtTime(2200,t+0.45); g.gain.setValueAtTime(0.28,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.48); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.5); }],
+  ["Kazoo Fanfare", (ac, t) => { [523,659,784,1046].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t+i*0.1); g.gain.setValueAtTime(0.2,t+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.18); o.connect(g).connect(ac.destination); o.start(t+i*0.1); o.stop(t+i*0.1+0.19); }); }],
+  ["Cartoon Bonk", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(640,t); o.frequency.exponentialRampToValueAtTime(180,t+0.18); g.gain.setValueAtTime(0.4,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.21); }],
+  ["Sparkle Chime", (ac, t) => { [1046,1318,1568,2093].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(f,t+i*0.06); g.gain.setValueAtTime(0.22,t+i*0.06); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.06+0.35); o.connect(g).connect(ac.destination); o.start(t+i*0.06); o.stop(t+i*0.06+0.36); }); }],
+  ["Mystery Honk", (ac, t) => { [277,349].forEach(f => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.35); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.36); }); }],
+  ["Rubber Duck", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(360,t); o.frequency.linearRampToValueAtTime(260,t+0.24); g.gain.setValueAtTime(0.22,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.26); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.28); }],
+  ["Airhorn Triple", (ac, t) => { [0,0.14,0.28].forEach((d,idx) => { [415,523].forEach(f => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(f,t+d); g.gain.setValueAtTime(0.16,t+d); g.gain.exponentialRampToValueAtTime(0.001,t+d+(idx===2?0.3:0.1)); o.connect(g).connect(ac.destination); o.start(t+d); o.stop(t+d+(idx===2?0.32:0.11)); }); }); }],
+  ["Chaotic Arpeggio", (ac, t) => { [330,440,554,659,880,1108,1318,987].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(f,t+i*0.045); g.gain.setValueAtTime(0.25,t+i*0.045); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.045+0.09); o.connect(g).connect(ac.destination); o.start(t+i*0.045); o.stop(t+i*0.045+0.1); }); }],
+  ["Purr Engine", (ac, t) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(68,t); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.55); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.56); }],
+  ["Dial-Up Screech", (ac, t) => { [950,1750,1200,2300,800,2100].forEach((f,i) => { const o=ac.createOscillator(), g=ac.createGain(); o.type="square"; o.frequency.setValueAtTime(f,t+i*0.06); g.gain.setValueAtTime(0.14,t+i*0.06); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.06+0.055); o.connect(g).connect(ac.destination); o.start(t+i*0.06); o.stop(t+i*0.06+0.06); }); }]
+];
+
+const TOASTS = [
+  "Certified Good Boy Energy +1",
+  "Unexplained Audio Event Triggered",
+  "Why did that sound just play?",
+  "Zero Context. Maximum Good Boy.",
+  "Completely Unnecessary Audio Achieved",
+  "The Audio Gremlin Approves"
+];
+
+function triggerGoodBoy() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const [label, fn] = CHAOS_SOUNDS[Math.floor(Math.random() * CHAOS_SOUNDS.length)];
+  const toast = TOASTS[Math.floor(Math.random() * TOASTS.length)];
+  fn(audioCtx, audioCtx.currentTime);
+  gbCount++;
+  $("gbToast").textContent = `🔊 ${toast} (${label})`;
+  $("gbMeta").textContent = `Good Boy Presses: ${gbCount} | Last Played: ${label}`;
+  const entry = document.createElement("div");
+  entry.className = "log-entry";
+  entry.textContent = `#${String(gbCount).padStart(2, "0")} -> ${label}`;
+  $("audioLog").prepend(entry);
+  [[-8,4],[8,-4],[-5,-3],[5,3],[0,0]].forEach(([x,y], i) => setTimeout(() => renderCanvas(x, y), i * 42));
+}
+
+// Init
+populateSelect("selStyle", STYLES);
+populateSelect("selSpecies", SPECIES);
+populateSelect("selExpr", EXPRS);
+populateSelect("selMarking", MARKINGS);
+populateSelect("selAcc", ACCESSORIES);
+populateSelect("selBg", BACKGROUNDS);
+
+PRESETS.forEach(pr => {
+  const b = document.createElement("button");
+  b.className = "preset-btn";
+  b.textContent = pr.name;
+  b.onclick = () => { state = { ...pr }; syncUI(); };
+  $("presetGrid").appendChild(b);
+});
+
+[["selStyle","style"],["selSpecies","species"],["selExpr","expr"],["selMarking","marking"],["selAcc","acc"],["selBg","bg"],["colPrimary","primary"],["colSecondary","secondary"],["colAccent","accent"],["colEye","eye"],["inpName","name"],["inpPronouns","pronouns"],["inpBio","bio"]].forEach(([id, key]) => {
+  $(id).addEventListener("input", e => { state[key] = e.target.value; renderStats(); renderCanvas(); });
+});
+
+$("btnGoodBoy").onclick = triggerGoodBoy;
+$("btnRandom").onclick = () => {
+  const r = arr => arr[Math.floor(Math.random() * arr.length)];
+  const randHex = () => "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, "0");
+  state = {
+    name: r(["Byte","Mochi","Cinder","Nova","Clover","Koda","Vex","Pixel","Zephyr"]),
+    species: r(SPECIES), style: r(STYLES), pronouns: r(["they/them","he/him","she/her","any/all"]),
+    primary: randHex(), secondary: "#FFF4FA", accent: randHex(), eye: randHex(),
+    expr: r(EXPRS), marking: r(MARKINGS), acc: r(ACCESSORIES), bg: r(BACKGROUNDS),
+    bio: "100% free-range randomized persona with maximum Good Boy energy."
+  };
+  syncUI();
+};
+$("btnPng").onclick = () => {
+  const a = document.createElement("a");
+  a.download = `${(state.name || "persona").toLowerCase()}.png`;
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+};
+$("btnJson").onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.download = `${(state.name || "persona").toLowerCase()}.json`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+};
+
+syncUI();
+</script>
+</body>
+</html>

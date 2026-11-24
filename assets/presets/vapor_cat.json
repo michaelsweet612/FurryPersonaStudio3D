@@ -1,0 +1,16 @@
+{
+  "id": "vapor_cat",
+  "name": "Nova",
+  "species": "Cat",
+  "style": "Vaporwave",
+  "pronouns": "she/they",
+  "primary_color": "#7B2CBF",
+  "secondary_color": "#FF9E00",
+  "accent_color": "#FF006E",
+  "eye_color": "#00F5D4",
+  "expression": "Derpy",
+  "marking": "Galaxy",
+  "accessory": "Round Glasses",
+  "background": "Vapor Sunset",
+  "bio": "Stares at lava lamps for hours while composing lo-fi cassette tapes from 1994."
+}
