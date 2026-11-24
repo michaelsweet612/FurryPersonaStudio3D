@@ -1,0 +1,176 @@
+{
+  "package": "FurryPersonaStudio3D_v8.0_FULLBODY",
+  "version": "8.0.0",
+  "engine": "4K GPU SDF Full-Body + Zero-Clip Mouth + Internal Organ Cutaway",
+  "good_boy_wavs": 20,
+  "files": {
+    "0_INSTANT_3D_STUDIO.bat": {
+      "bytes": 193,
+      "sha256": "56a94a44f4fdb8a3946d70e26f21646b42c7eb667b59033f3dfe92f06a284c9c"
+    },
+    "1_RUN_ME_FIRST_AUTO_SETUP_AND_EXE.bat": {
+      "bytes": 75,
+      "sha256": "d096056b53b8dc6d17f16bda69251f7f66d5c7f77557595c4db95af33571f8b3"
+    },
+    "README.md": {
+      "bytes": 932,
+      "sha256": "c2b1a3dece9240c16cf126dd618fa51eb96251f7a8c6413d0a83c85df5cebb26"
+    },
+    "build_exe.bat": {
+      "bytes": 936,
+      "sha256": "50ef2c93f6eec91f394e653fe513894da6957b200f43fea2073b8476348e609a"
+    },
+    "build_exe.spec": {
+      "bytes": 1229,
+      "sha256": "407f363af3d15b0b69edede21a0096f5ab7d5ca06f6b982e6c1f49aff5e61be3"
+    },
+    "launch_windows.bat": {
+      "bytes": 526,
+      "sha256": "3f70ab0180df0df83f0b5652ddc36e53eae42aa17140ab101591a4a429036b74"
+    },
+    "assets/audio/01_squeaky_toy.wav": {
+      "bytes": 15478,
+      "sha256": "a054a295aa1c15749cb52115097629327a2ee63a8209d8e7ea016d863f0b78c0"
+    },
+    "assets/audio/02_boing_spring.wav": {
+      "bytes": 28708,
+      "sha256": "cb20eb10b2b4e39b0744534fd166eef336c939fe0c374debc6e49c2ed1221150"
+    },
+    "assets/audio/03_sci_fi_laser.wav": {
+      "bytes": 19888,
+      "sha256": "5313d4aa5a4184529170f27608fb423d15596847ee67cd653aa0438670158a12"
+    },
+    "assets/audio/04_rubber_duck.wav": {
+      "bytes": 14156,
+      "sha256": "a1a3670ac233414903daf8a83d8a1528efcc0ec707e363c36d19db92df5cee2b"
+    },
+    "assets/audio/05_retro_bark_8bit.wav": {
+      "bytes": 15920,
+      "sha256": "a574fb96cb894c1968fe00d3e926bda59de2530d6f0383af606673a7267fa248"
+    },
+    "assets/audio/06_dramatic_bass_drop.wav": {
+      "bytes": 39734,
+      "sha256": "be9028a52885c60f91b92527f750a416fdfd19f52a28feda7963bc043a87d5ae"
+    },
+    "assets/audio/07_slide_whistle_up.wav": {
+      "bytes": 24298,
+      "sha256": "53d13c313d93b93d44d1d6008264d5befec524fe413395f97abb9272afb135a7"
+    },
+    "assets/audio/08_kazoo_fanfare.wav": {
+      "bytes": 26942,
+      "sha256": "6bdb551f1a3eb479a5dcee6bd8f3cee1f731c9aefa2ea2e4de860d028d9d5818"
+    },
+    "assets/audio/09_airhorn_triple.wav": {
+      "bytes": 28264,
+      "sha256": "5c2d2fb3bdbc75dd579140cc02f19054f0f6ca40e64a65579922ec6b9e633e84"
+    },
+    "assets/audio/10_chaotic_arpeggio.wav": {
+      "bytes": 24284,
+      "sha256": "e0ec1c9cc77ff0e07e1b8d021ef39bec69936d7426d4b30ec33cb019887dc027"
+    },
+    "assets/audio/11_purr_engine.wav": {
+      "bytes": 35324,
+      "sha256": "3bb4283bab6129138ecc2c74990179fbf507bb57e1304d1d4f4d1f5660e5e4fb"
+    },
+    "assets/audio/12_dialup_screech.wav": {
+      "bytes": 24298,
+      "sha256": "0e910b406cb6d49f88bdc79c352d4d16bd2ab06d211db9594fa2268220168eee"
+    },
+    "assets/audio/13_cartoon_bonk.wav": {
+      "bytes": 11068,
+      "sha256": "264134eca915cfbc0ce4b93451d6f245cf7393c5ac362714142810f57acac453"
+    },
+    "assets/audio/14_sparkle_chime.wav": {
+      "bytes": 30912,
+      "sha256": "5a8b5e19d8aa8b0ecb521e7a3ee1c2144af2b70a0cc086c865c53c31c3fa26de"
+    },
+    "assets/audio/15_mystery_honk.wav": {
+      "bytes": 17684,
+      "sha256": "d97b1ee1cc48964fd0c469c9eaa57c60164255b24467187799407fcb9cce5276"
+    },
+    "assets/audio/16_dramatic_opera_chord.wav": {
+      "bytes": 37528,
+      "sha256": "87ffda1ba0482666c526515fc1cc2a1c10d953b328e6e5ac28b78e98adacefc3"
+    },
+    "assets/audio/17_frog_ribbit.wav": {
+      "bytes": 15478,
+      "sha256": "1e36c84bd6dabea117c5b2ad259799e90f75d35bde88918ca94a9a21b175cb72"
+    },
+    "assets/audio/18_confetti_pop.wav": {
+      "bytes": 12392,
+      "sha256": "19cdc11c8eb9687b3aa2433b976cf1550627b7178b562c75353b26cda2637f83"
+    },
+    "assets/audio/19_alien_wobble.wav": {
+      "bytes": 26504,
+      "sha256": "dfda52a28d89aee928843c379ac52d8fb2a6ccde26420b0569fc8be962c6d6f6"
+    },
+    "assets/audio/20_microwave_ding.wav": {
+      "bytes": 39734,
+      "sha256": "bdcf21534a98631f3da558975f5e98a14030d83b25dd6a1ef1a8eab0b4b6ac55"
+    },
+    "assets/icons/app_icon.ico": {
+      "bytes": 24649,
+      "sha256": "597df5aedf9f945dbbf0a5accbcdfe8b5a68a1ce49841eb1cc322c07e2688df0"
+    },
+    "assets/icons/app_icon.png": {
+      "bytes": 3714,
+      "sha256": "77d2b90c690ef57db2c45d895f2cb1ac87c5264b93f0ad82c84eb731afc220e4"
+    },
+    "assets/palettes/palettes.json": {
+      "bytes": 1659,
+      "sha256": "4fea3b361131d4db79e396b13f3615053438eb0f1a153232fb6e0048382c3484"
+    },
+    "assets/presets/arcade_proto.json": {
+      "bytes": 450,
+      "sha256": "9fa7aa095a4d9723ededcdfda075c046dae52eb2e069f26743825b1cbba05c44"
+    },
+    "assets/presets/ink_dragon.json": {
+      "bytes": 438,
+      "sha256": "30eaf691c3a20b70625aa70cb1b77d82d3115266683362aaeff21cfa8d62bc9a"
+    },
+    "assets/presets/neon_wolf.json": {
+      "bytes": 442,
+      "sha256": "9b9c26c593f2fa7cd008f3952e98b109ab2fe70ccea024721c7e603d16efc3b1"
+    },
+    "assets/presets/plush_bunny.json": {
+      "bytes": 443,
+      "sha256": "9d5b8c014562b878a5a4ff71f830b527000aacf324339fcdb04872c1adc95215"
+    },
+    "assets/presets/sakura_fox.json": {
+      "bytes": 429,
+      "sha256": "6fce7be6783aad299bd33f2a6e4565380552fa317733ddc6ef9aba808816b968"
+    },
+    "assets/presets/vapor_cat.json": {
+      "bytes": 431,
+      "sha256": "6ac938c2f123141d17b3ca5779b31c8e1d3beb9df7c979127679eefb907e2dfa"
+    },
+    "required_programs/check_and_install_requirements.bat": {
+      "bytes": 2575,
+      "sha256": "1ff8e186d676e63b756201d32251451975944e6aa248d126be09537fcab18294"
+    },
+    "src/audio_chaos.py": {
+      "bytes": 3483,
+      "sha256": "a907639f6a6eae4c87d0ea97e0c210de9adf1c259d33ab8ee018f5de2a5d9533"
+    },
+    "src/furry_persona_studio.py": {
+      "bytes": 13503,
+      "sha256": "ac9a2f19d7a1b2a9cc4490644422e5ecd8c30bdd099c8e253c40bb5abf3641f5"
+    },
+    "src/persona_engine.py": {
+      "bytes": 5952,
+      "sha256": "25328ef6f9d13da3d5faf1812302bc715a0319c22dd6bbd9b169f132116b7259"
+    },
+    "src/style_renderer.py": {
+      "bytes": 9959,
+      "sha256": "a483bf463cb082999f6678b2705f17736b21fc881922f7565a4c305a698b3a2a"
+    },
+    "web_edition/FurryPersonaStudio.html": {
+      "bytes": 31035,
+      "sha256": "0c43df4a81b906abf9959b852894cb4f098b92a1d910a1a004870e56dfdcfcc6"
+    },
+    "web_edition/FurryPersonaStudio3D.html": {
+      "bytes": 53365,
+      "sha256": "efadf5ef245380602b792b3828fb632b60a2df95eb3745cb23337a32ec6ecb18"
+    }
+  }
+}
